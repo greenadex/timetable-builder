@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import utils.ParseURL;
 
 /**
@@ -46,8 +47,9 @@ public class Timetable {
 
     /**
      * Constructor for the timetable. It parses all the lines, storing the necessary information for the given group.
+     *
      * @param website - a ParseURL object containing the HTML source code lines
-     * @param group - the group number
+     * @param group   - the group number
      * @throws IOException
      */
     public Timetable(ParseURL website, final String group) throws IOException {
@@ -117,6 +119,7 @@ public class Timetable {
                     if (currentRow >= 1) {
                         nextClass = new Class();
                     }
+
                     continue;
                 }
 

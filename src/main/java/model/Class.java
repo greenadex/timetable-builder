@@ -33,8 +33,8 @@ public class Class {
     public void setPeriod(String period) {
         this.period = period;
         String[] hours = period.split("-");
-        startingHour = (hours[0].length() == 1 ? "0" : "") +  hours[0] + ":00";
-        endingHour = (hours[1].length() == 1 ? "0" : "") +  hours[1] + ":00";
+        startingHour = (hours[0].length() == 1 ? "0" : "") + hours[0] + ":00";
+        endingHour = (hours[1].length() == 1 ? "0" : "") + hours[1] + ":00";
     }
 
     public String getStartingHour() {
@@ -102,7 +102,8 @@ public class Class {
     /**
      * Sets the information based on a number. Each field has a theoretical index associated to id based
      * on the order of declaration. This function is used when parsing a class from the HTML source code.
-     * @param number - the index of the field we wish to set
+     *
+     * @param number      - the index of the field we wish to set
      * @param information - the information we wish to add to the current class
      */
     public void setInformation(int number, String information) {

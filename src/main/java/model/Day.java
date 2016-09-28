@@ -6,7 +6,6 @@ import java.util.List;
 /**
  * Created on 11.09.2016.
  */
-
 class Day {
     /**
      * List of all the Classes of the current Day
@@ -15,6 +14,7 @@ class Day {
 
     /**
      * Adds a new Class to the current Day
+     *
      * @param newClass - the new class of the day
      */
     void addClass(Class newClass) {

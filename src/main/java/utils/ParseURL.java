@@ -24,6 +24,7 @@ public class ParseURL {
 
     /**
      * Constructor for ParseURL
+     *
      * @param url - the url to the timetable
      * @throws MalformedURLException
      */
@@ -33,6 +34,7 @@ public class ParseURL {
 
     /**
      * Reads and stores the source code of the website
+     *
      * @throws IOException
      */
     private void readFromFile() throws IOException {
@@ -45,6 +47,7 @@ public class ParseURL {
 
     /**
      * Getter for the source code of the website
+     *
      * @return a list of all the lines
      * @throws IOException
      */
@@ -57,6 +60,7 @@ public class ParseURL {
 
     /**
      * Determines the semester of the timetable from the url
+     *
      * @return 1 if the timetable is for the first semester and 2 otherwise
      */
     public int getSemester() {

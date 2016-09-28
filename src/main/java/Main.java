@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.util.Scanner;
 
 /**
- * Created by 27.09.2016.
+ * Created on 27.09.2016.
  */
 public class Main {
     /**
-     * Starting point of the application
+     * Starting point of the application.
      * @param args
      * @throws IOException
      */

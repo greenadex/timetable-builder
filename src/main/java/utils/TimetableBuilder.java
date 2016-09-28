@@ -27,6 +27,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+/**
+ * Created on 26.09.2016
+ */
 public class TimetableBuilder {
     /**
      * Application name.
@@ -127,12 +130,13 @@ public class TimetableBuilder {
 
     /**
      * Adds a new class (a new event) of the timetable to the calendar
-     * @param calendarId - the id of the calendar where the new event will be added
-     * @param newClass - the Class object holding the information of the class to be added
-     * @param noOfWeeks - the number of weeks of the current semester
+     *
+     * @param calendarId           - the id of the calendar where the new event will be added
+     * @param newClass             - the Class object holding the information of the class to be added
+     * @param noOfWeeks            - the number of weeks of the current semester
      * @param startingDateSemester - the starting date of the current semester
-     * @param holidayWeek - the starting holiday of the current semester
-     * @param holidayLength - the length of the holiday
+     * @param holidayWeek          - the starting holiday of the current semester
+     * @param holidayLength        - the length of the holiday
      * @throws IOException
      */
     private static void addClass(String calendarId, Class newClass, int noOfWeeks, String startingDateSemester,
@@ -244,8 +248,9 @@ public class TimetableBuilder {
 
     /**
      * Adds the timetable to the calendar
+     *
      * @param calendarId - the id of the calendar where the timetable will be added
-     * @param timetable - the Timetable object which holds all the information of the calendar to be added
+     * @param timetable  - the Timetable object which holds all the information of the calendar to be added
      * @throws IOException
      */
     public static void addTimetableInCalendar(String calendarId, Timetable timetable) throws IOException {
@@ -259,8 +264,9 @@ public class TimetableBuilder {
 
     /**
      * Creates a new calendar with an appropriate description for a timetable
+     *
      * @param timetable - the timetable to be added in the newly created calendar
-     * @return - the id of the calendar created
+     * @return the id of the calendar created
      * @throws IOException
      */
     public static String createCalendar(Timetable timetable) throws IOException {
