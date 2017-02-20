@@ -13,21 +13,17 @@ import utils.ParseURL;
 public class Timetable {
     private static final int NO_OF_DAYS_IN_TIMETABLE = 7;
 
-    /**
-     * Hardcoded details of the first semester of 2016-2017 at UBB
-     */
     private static final int NO_OF_WEEKS_FIRST_SEMESTER = 16;
-    private static final String STARTING_DATE_FIRST_SEMESTER = "2016-10-03";
     private static final int CHRISTMAS_HOLIDAY = 12;
     private static final int CHRISTMAS_HOLIDAY_LENGTH = 2;
 
-    /**
-     * Hardcoded details of the second semester of 2016-2017 at UBB
-     */
     private static final int NO_OF_WEEKS_SECOND_SEMESTER = 15;
-    private static final String STARTING_DATE_SECOND_SEMESTER = "2017-02-27";
     private static final int EASTER_HOLIDAY = 7;
     private static final int EASTER_HOLIDAY_LENGTH = 1;
+    
+    private static final String STARTING_DATE_FIRST_SEMESTER = "2016-10-03";
+    private static final String STARTING_DATE_SECOND_SEMESTER = "2017-02-27";
+    
 
     /**
      * The core information of the timetable

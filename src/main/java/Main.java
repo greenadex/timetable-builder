@@ -23,7 +23,6 @@ public class Main {
         String groupNumber = scanner.nextLine();
 
         ParseURL parseURL;
-
         try {
             parseURL = new ParseURL(link);
         } catch (Exception e) {
@@ -32,10 +31,8 @@ public class Main {
         }
 
         Timetable timetable = new Timetable(parseURL, groupNumber);
-        System.out.println("Reading has finished");
-
+        System.out.println("Creating new calendar...");
         String calendarId = TimetableBuilder.createCalendar(timetable);
-        System.out.println("The new calendar was created!");
 
         TimetableBuilder.addTimetableInCalendar(calendarId, timetable);
         System.out.println("All done!");

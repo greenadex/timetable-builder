@@ -73,7 +73,6 @@ public class TimetableBuilder {
     private static final List<String> SCOPES =
             Collections.singletonList(CalendarScopes.CALENDAR);
 
-
     static {
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -107,8 +106,6 @@ public class TimetableBuilder {
                         .build();
         Credential credential = new AuthorizationCodeInstalledApp(
                 flow, new LocalServerReceiver()).authorize("user");
-//        System.out.println(
-//                "Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
         return credential;
     }
 
@@ -153,7 +150,6 @@ public class TimetableBuilder {
         event.setDescription(newClass.getTypeOfClass() + ' ' + newClass.getNameOfClass() + " - "
                 + newClass.getProfessor());
 
-
         //Set colors
         int colorId = 4; //light red
         //11 for dark red
@@ -179,14 +175,12 @@ public class TimetableBuilder {
         }
 
         String startingDate = localStartingDate.toString();
-
-
+        
         //Frequency and format interval
         int frequency = noOfWeeks;
         if (!newClass.getFrequency().isEmpty())
             frequency /= 2;
         String formatInterval = (frequency == noOfWeeks ? "" : "INTERVAL=2;");
-
 
         //Recurrence rule with exception dates
         List<String> recurrenceSet = new ArrayList<>();
@@ -200,6 +194,7 @@ public class TimetableBuilder {
         if (holidayWeek == 12) { //checks whether we're in the first semester or not
             decrement = 0;
         }
+
         //Daylight savings time problem
         int hour = Integer.parseInt(newClass.getStartingHour().substring(0, 2)) - decrement;
         String hourFormat = Integer.toString(hour);
