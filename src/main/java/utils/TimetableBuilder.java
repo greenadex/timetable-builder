@@ -190,13 +190,7 @@ public class TimetableBuilder {
 
         StringBuilder exDate = new StringBuilder("EXDATE;TZID=Europe/Bucharest:");
 
-        int decrement = 1;
-        if (holidayWeek == 12) { //checks whether we're in the first semester or not
-            decrement = 0;
-        }
-
-        //Daylight savings time problem
-        int hour = Integer.parseInt(newClass.getStartingHour().substring(0, 2)) - decrement;
+        int hour = Integer.parseInt(newClass.getStartingHour().substring(0, 2));
         String hourFormat = Integer.toString(hour);
         if (hourFormat.length() == 1)
             hourFormat = "0" + hourFormat;
@@ -230,8 +224,12 @@ public class TimetableBuilder {
         recurrenceSet.add("RRULE:FREQ=WEEKLY;COUNT=" + frequency + ";" + formatInterval);
 
         //Set start and end for event; set recurrence
-        DateTime start = DateTime.parseRfc3339(startingDate + "T" + newClass.getStartingHour() + ":00.000+03:00");
-        DateTime end = DateTime.parseRfc3339(startingDate + "T" + newClass.getEndingHour() + ":00.000+03:00");
+        String timeZone = ":00.000+02:00";
+        if (holidayWeek == 12) {
+            timeZone = ":00.000+03:00";
+        }
+        DateTime start = DateTime.parseRfc3339(startingDate + "T" + newClass.getStartingHour() + timeZone); 
+        DateTime end = DateTime.parseRfc3339(startingDate + "T" + newClass.getEndingHour() + timeZone);
 
         event.setStart(new EventDateTime().setDateTime(start).setTimeZone("Europe/Bucharest"));
         event.setEnd(new EventDateTime().setDateTime(end).setTimeZone("Europe/Bucharest"));
@@ -267,7 +265,7 @@ public class TimetableBuilder {
     public static String createCalendar(Timetable timetable) throws IOException {
         Calendar newCalendar = new Calendar();
 
-        newCalendar.setSummary("Timetable " + timetable.getGroup() + " Sem." + timetable.getSemester());
+        newCalendar.setSummary(timetable.getGroup() + " Sem." + timetable.getSemester());
         newCalendar.setDescription("Here is the timetable for group " + timetable.getGroup() + " for the semester "
                 + timetable.getSemester() + "\n\n\tRed - Course\n\tGreen - Seminar\n\tYellow - Laboratory");
         newCalendar.setTimeZone("Europe/Bucharest");
