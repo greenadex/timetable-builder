@@ -94,7 +94,7 @@ public class TimetableBuilder {
     private static Credential authorize() throws IOException {
         // Load client secrets.
         InputStream in =
-                TimetableBuilder.class.getResourceAsStream("/client_secret.json");
+                TimetableBuilder.class.getResourceAsStream("/client.json");
         GoogleClientSecrets clientSecrets =
                 GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 

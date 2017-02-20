@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+
+mainClassName = 'Main'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+version = '1.0'
+
+run {
+    standardInput = System.in
+}
+
+repositories {
+        mavenCentral()
+}
+
+dependencies {
+        compile 'com.google.api-client:google-api-client:1.22.0'
+        compile 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
+        compile 'com.google.apis:google-api-services-calendar:v3-rev234-1.22.0'
+}

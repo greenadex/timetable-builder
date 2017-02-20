@@ -16,10 +16,10 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        System.out.printf("Input the link to the timetable (tabelar): ");
+        System.out.printf("Input the link to the timetable (tabelar):\n");
         String link = scanner.nextLine();
 
-        System.out.printf("Input the group: ");
+        System.out.printf("Input the group:\n");
         String groupNumber = scanner.nextLine();
 
         ParseURL parseURL;
