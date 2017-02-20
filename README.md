@@ -3,6 +3,7 @@ Command Line Application for generating a timetable-calendar in Google Calendar 
 
 **Prerequisites:**
 1. Java 1.8+
+
 2. [Gradle](https://gradle.org/install)
 
 **Run**: gradle -q run
