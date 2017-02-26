@@ -1,5 +1,4 @@
 build/
-.gradle/3.0/taskArtifacts/
 gradle/
 .gradle/
 gradlew
