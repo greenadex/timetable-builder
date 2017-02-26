@@ -265,7 +265,10 @@ public class TimetableBuilder {
     public static String createCalendar(Timetable timetable) throws IOException {
         Calendar newCalendar = new Calendar();
 
-        newCalendar.setSummary(timetable.getGroup() + " Sem." + timetable.getSemester());
+        String summary = timetable.getSemiGroup().equals("*") ?
+                    timetable.getGroup() + " Sem." + timetable.getSemester() :
+                    timetable.getGroup() + "/" + timetable.getSemiGroup() + " Sem." + timetable.getSemester();
+        newCalendar.setSummary(summary);
         newCalendar.setDescription("Here is the timetable for group " + timetable.getGroup() + " for the semester "
                 + timetable.getSemester() + "\n\n\tRed - Course\n\tGreen - Seminar\n\tYellow - Laboratory");
         newCalendar.setTimeZone("Europe/Bucharest");
