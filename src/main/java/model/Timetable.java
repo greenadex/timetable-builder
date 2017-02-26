@@ -30,6 +30,7 @@ public class Timetable {
      */
     private final Day[] days = new Day[NO_OF_DAYS_IN_TIMETABLE];
     private final String group;
+    private final String semiGroup;
     private final int semester;
 
     /**
@@ -48,8 +49,10 @@ public class Timetable {
      * @param group   - the group number
      * @throws IOException
      */
-    public Timetable(ParseURL website, final String group) throws IOException {
+    public Timetable(ParseURL website, final String group, final String semiGroup) throws IOException {
         this.group = group;
+        this.semiGroup = semiGroup;
+        
         semester = website.getSemester();
 
         //Determine the information of the current semester (holiday length, number of weeks in the semester etc.)
@@ -70,7 +73,7 @@ public class Timetable {
         int currentRow = -1;
         int currentColumn = -1;
 
-        boolean inTheRightTable = false;
+        boolean inTheRightTable = false, rowOutOfScope = false;
 
         Class nextClass = null;
         List<Class> allClasses = new ArrayList<>();
@@ -121,7 +124,10 @@ public class Timetable {
 
                 //Checks whether we have reached the end of a row
                 if (line.substring(1, 4).equals("/tr") && currentRow >= 1) {
-                    allClasses.add(nextClass);
+                    if (!rowOutOfScope || semiGroup.equals("*")) {
+                        allClasses.add(nextClass);
+                    }
+                    rowOutOfScope = false;
                     continue;
                 }
 
@@ -156,6 +162,15 @@ public class Timetable {
 
                         if (current == noOfElem)
                             isInformation = true;
+                    }
+
+                    //Check if the current row belongs to another semigroup. If so,
+                    //we mark it as out of scope
+                    if (currentColumn == 4 && 
+                        Pattern.compile(group + "/[^" + semiGroup + "]")
+                        .matcher(information.toString())
+                        .matches()) {
+                        rowOutOfScope = true;
                     }
 
                     //Sets the information of the parsed class
@@ -205,6 +220,10 @@ public class Timetable {
 
     public String getGroup() {
         return group;
+    }
+
+    public String getSemiGroup() {
+        return semiGroup;
     }
 
     public int getSemester() {

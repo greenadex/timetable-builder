@@ -22,6 +22,9 @@ public class Main {
         System.out.printf("Input the group:\n");
         String groupNumber = scanner.nextLine();
 
+        System.out.printf("Input the semi-group (or * for all semi-groups):\n");
+        String semiGroupNumber = scanner.nextLine();
+
         ParseURL parseURL;
         try {
             parseURL = new ParseURL(link);
@@ -30,7 +33,7 @@ public class Main {
             return;
         }
 
-        Timetable timetable = new Timetable(parseURL, groupNumber);
+        Timetable timetable = new Timetable(parseURL, groupNumber, semiGroupNumber);
         System.out.println("Creating new calendar...");
         String calendarId = TimetableBuilder.createCalendar(timetable);
 
