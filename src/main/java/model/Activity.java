@@ -3,10 +3,7 @@ package model;
 /**
  * Created on 11.09.2016.
  */
-public class Class {
-    /**
-     * The necessary information of a class
-     */
+public class Activity {
     private String day;
     private String period;
     private String startingHour;
@@ -14,8 +11,8 @@ public class Class {
     private String frequency;
     private String classRoom;
     private String group;
-    private String typeOfClass;
-    private String nameOfClass;
+    private String typeOfActivity;
+    private String nameOfActivity;
     private String professor;
 
     public String getDay() {
@@ -59,11 +56,11 @@ public class Class {
         }
     }
 
-    public String getClassRoom() {
+    public String getActivityRoom() {
         return classRoom;
     }
 
-    public void setClassRoom(String classRoom) {
+    public void setActivityRoom(String classRoom) {
         this.classRoom = classRoom;
     }
 
@@ -75,20 +72,20 @@ public class Class {
         this.group = group;
     }
 
-    public String getTypeOfClass() {
-        return typeOfClass;
+    public String getTypeOfActivity() {
+        return typeOfActivity;
     }
 
-    public void setTypeOfClass(String typeOfClass) {
-        this.typeOfClass = typeOfClass;
+    public void setTypeOfActivity(String typeOfActivity) {
+        this.typeOfActivity = typeOfActivity;
     }
 
-    public String getNameOfClass() {
-        return nameOfClass;
+    public String getNameOfActivity() {
+        return nameOfActivity;
     }
 
-    public void setNameOfClass(String nameOfClass) {
-        this.nameOfClass = nameOfClass;
+    public void setNameOfActivity(String nameOfActivity) {
+        this.nameOfActivity = nameOfActivity;
     }
 
     public String getProfessor() {
@@ -118,28 +115,28 @@ public class Class {
                 setFrequency(information);
                 break;
             case 3:
-                setClassRoom(information);
+                setActivityRoom(information);
                 break;
             case 4:
                 setGroup(information);
                 break;
             case 5:
-                setTypeOfClass(information);
+                setTypeOfActivity(information);
                 break;
             case 6:
-                setNameOfClass(information);
+                setNameOfActivity(information);
                 break;
             case 7:
                 setProfessor(information);
                 break;
             default:
-                throw new IllegalArgumentException("Error parsing class! Number is " + number);
+                throw new IllegalArgumentException("Error parsing activity! Number is " + number);
         }
     }
 
     @Override
     public String toString() {
         return String.format("%s | %s | %s | %s | %s | %s | %s | %s", day, period, frequency, classRoom, group,
-                typeOfClass, nameOfClass, professor);
+                typeOfActivity, nameOfActivity, professor);
     }
 }

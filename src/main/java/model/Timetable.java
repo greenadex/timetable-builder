@@ -75,8 +75,8 @@ public class Timetable {
 
         boolean inTheRightTable = false, rowOutOfScope = false;
 
-        Class nextClass = null;
-        List<Class> allClasses = new ArrayList<>();
+        Activity nextActivity = null;
+        List<Activity> allActivities = new ArrayList<>();
 
         String currentGroup = "";
 
@@ -114,9 +114,9 @@ public class Timetable {
                     //Having reached a new row, we need to reset the column count
                     currentColumn = -1;
 
-                    //The first row does not contain any classes so we need to ignore it
+                    //The first row does not contain any activities so we need to ignore it
                     if (currentRow >= 1) {
-                        nextClass = new Class();
+                        nextActivity = new Activity();
                     }
 
                     continue;
@@ -125,7 +125,7 @@ public class Timetable {
                 //Checks whether we have reached the end of a row
                 if (line.substring(1, 4).equals("/tr") && currentRow >= 1) {
                     if (!rowOutOfScope || semiGroup.equals("*")) {
-                        allClasses.add(nextClass);
+                        allActivities.add(nextActivity);
                     }
                     rowOutOfScope = false;
                     continue;
@@ -173,8 +173,8 @@ public class Timetable {
                         rowOutOfScope = true;
                     }
 
-                    //Sets the information of the parsed class
-                    nextClass.setInformation(currentColumn, information.toString());
+                    //Sets the information of the parsed activity
+                    nextActivity.setInformation(currentColumn, information.toString());
                 }
             }
         }
@@ -184,38 +184,38 @@ public class Timetable {
             throw new IllegalArgumentException("The timetable for group " + group + " was not found!");
         }
 
-        //The timetable of the group was found, however it contained no classes
-        if (allClasses.isEmpty()) {
-            throw new IllegalArgumentException("No classes in timetable found!");
+        //The timetable of the group was found, however it contained no activities
+        if (allActivities.isEmpty()) {
+            throw new IllegalArgumentException("No activities found");
         }
 
-        //Divide the classes by day
-        String currentDay = allClasses.get(0).getDay();
+        //Divide the activities by day
+        String currentDay = allActivities.get(0).getDay();
         int indexOfCurrentDay = FromDayToInteger.getInteger(currentDay);
 
-        for (Class currentClass : allClasses) {
-            if (!currentClass.getDay().equals(currentDay)) {
-                currentDay = currentClass.getDay();
+        for (Activity currentActivity : allActivities) {
+            if (!currentActivity.getDay().equals(currentDay)) {
+                currentDay = currentActivity.getDay();
                 indexOfCurrentDay = FromDayToInteger.getInteger(currentDay);
             }
 
-            days[indexOfCurrentDay].addClass(currentClass);
+            days[indexOfCurrentDay].addActivity(currentActivity);
         }
 
     }
 
-    public List<Class> getDays() {
-        List<Class> allClasses = new ArrayList<>();
+    public List<Activity> getDays() {
+        List<Activity> allActivities = new ArrayList<>();
         for (Day day : days) {
-            allClasses.addAll(day.getClasses());
+            allActivities.addAll(day.getActivities());
         }
-        return allClasses;
+        return allActivities;
     }
 
-    public List<Class> getDay(int index) {
+    public List<Activity> getDay(int index) {
         if (index < 0 || index > 6)
             throw new IllegalArgumentException("Invalid day");
-        return days[index].getClasses();
+        return days[index].getActivities();
     }
 
     public String getGroup() {

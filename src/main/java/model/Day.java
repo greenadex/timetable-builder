@@ -8,32 +8,32 @@ import java.util.List;
  */
 class Day {
     /**
-     * List of all the Classes of the current Day
+     * List of all the Activities of the current Day
      */
-    private List<Class> classes = new ArrayList<>();
+    private List<Activity> activities = new ArrayList<>();
 
     /**
-     * Adds a new Class to the current Day
+     * Adds a new Activity to the current Day
      *
-     * @param newClass - the new class of the day
+     * @param newActivity - the new activity of the day
      */
-    void addClass(Class newClass) {
-        if (newClass == null) {
-            throw new NullPointerException("Tried to add null class!");
+    void addActivity(Activity newActivity) {
+        if (newActivity == null) {
+            throw new NullPointerException("Tried to add null activity!");
         }
 
-        classes.add(newClass);
+        activities.add(newActivity);
     }
 
-    List<Class> getClasses() {
-        return classes;
+    List<Activity> getActivities() {
+        return activities;
     }
 
     @Override
     public String toString() {
         StringBuilder output = new StringBuilder();
-        for (Class nextClass : classes) {
-            output.append(nextClass).append("\n");
+        for (Activity nextActivity : activities) {
+            output.append(nextActivity).append("\n");
         }
         return output.toString();
     }

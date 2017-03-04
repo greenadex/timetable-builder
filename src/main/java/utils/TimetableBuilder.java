@@ -15,7 +15,7 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.*;
 import com.google.api.services.calendar.model.Calendar;
-import model.Class;
+import model.Activity;
 import model.FromDayToInteger;
 import model.Timetable;
 
@@ -129,35 +129,35 @@ public class TimetableBuilder {
      * Adds a new class (a new event) of the timetable to the calendar
      *
      * @param calendarId           - the id of the calendar where the new event will be added
-     * @param newClass             - the Class object holding the information of the class to be added
+     * @param newActivity             - the Activity object holding the information of the class to be added
      * @param noOfWeeks            - the number of weeks of the current semester
      * @param startingDateSemester - the starting date of the current semester
      * @param holidayWeek          - the starting holiday of the current semester
      * @param holidayLength        - the length of the holiday
      * @throws IOException
      */
-    private static void addClass(String calendarId, Class newClass, int noOfWeeks, String startingDateSemester,
+    private static void addActivity(String calendarId, Activity newActivity, int noOfWeeks, String startingDateSemester,
                                  int holidayWeek, int holidayLength) throws IOException {
         Event event = new Event();
 
         //Set summary, title, location and description
-        String title = newClass.getNameOfClass();
-        if (newClass.getTypeOfClass().equals("Laborator") && newClass.getGroup().contains("/"))
-            title += " " + newClass.getGroup();
+        String title = newActivity.getNameOfActivity();
+        if (newActivity.getTypeOfActivity().equals("Laborator") && newActivity.getGroup().contains("/"))
+            title += " " + newActivity.getGroup();
 
         event.setSummary(title);
-        event.setLocation(newClass.getClassRoom());
-        event.setDescription(newClass.getTypeOfClass() + ' ' + newClass.getNameOfClass() + " - "
-                + newClass.getProfessor());
+        event.setLocation(newActivity.getActivityRoom());
+        event.setDescription(newActivity.getTypeOfActivity() + ' ' + newActivity.getNameOfActivity() + " - "
+                + newActivity.getProfessor());
 
         //Set colors
         int colorId = 4; //light red
         //11 for dark red
 
-        if (newClass.getTypeOfClass().equals("Seminar"))
+        if (newActivity.getTypeOfActivity().equals("Seminar"))
             colorId = 10; //green
 
-        if (newClass.getTypeOfClass().equals("Laborator"))
+        if (newActivity.getTypeOfActivity().equals("Laborator"))
             colorId = 5; //yellow
 
         event.setColorId(Integer.toString(colorId));
@@ -168,9 +168,9 @@ public class TimetableBuilder {
                 Integer.parseInt(startingDateSemester.substring(5, 7)),
                 Integer.parseInt(startingDateSemester.substring(8)));
 
-        localStartingDate = localStartingDate.plus(FromDayToInteger.getInteger(newClass.getDay()), ChronoUnit.DAYS);
+        localStartingDate = localStartingDate.plus(FromDayToInteger.getInteger(newActivity.getDay()), ChronoUnit.DAYS);
 
-        if (newClass.getFrequency().contains("2")) {
+        if (newActivity.getFrequency().contains("2")) {
             localStartingDate = localStartingDate.plus(1, ChronoUnit.WEEKS);
         }
 
@@ -178,7 +178,7 @@ public class TimetableBuilder {
         
         //Frequency and format interval
         int frequency = noOfWeeks;
-        if (!newClass.getFrequency().isEmpty())
+        if (!newActivity.getFrequency().isEmpty())
             frequency /= 2;
         String formatInterval = (frequency == noOfWeeks ? "" : "INTERVAL=2;");
 
@@ -190,21 +190,21 @@ public class TimetableBuilder {
 
         StringBuilder exDate = new StringBuilder("EXDATE;TZID=Europe/Bucharest:");
 
-        int hour = Integer.parseInt(newClass.getStartingHour().substring(0, 2));
+        int hour = Integer.parseInt(newActivity.getStartingHour().substring(0, 2));
         String hourFormat = Integer.toString(hour);
         if (hourFormat.length() == 1)
             hourFormat = "0" + hourFormat;
-        String hourClass = "T" + hourFormat + newClass.getStartingHour().substring(3) + "00";
+        String hourActivity = "T" + hourFormat + newActivity.getStartingHour().substring(3) + "00";
 
         boolean exDateExists = false;
-        int desiredModulus = newClass.getFrequency().contains("2") ? 1 : 0;
+        int desiredModulus = newActivity.getFrequency().contains("2") ? 1 : 0;
         for (int i = holidayWeek; i < endException; i++) {
             if (frequency == noOfWeeks) {
                 exDateExists = true;
                 LocalDate localExceptionDate = localStartingDate.plus(i, ChronoUnit.WEEKS);
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
                 String formattedDay = formatter.format(localExceptionDate);
-                exDate.append(formattedDay).append(hourClass);
+                exDate.append(formattedDay).append(hourActivity);
                 if (endException - i > 1)
                     exDate.append(",");
             } else {
@@ -213,7 +213,7 @@ public class TimetableBuilder {
                     LocalDate localExceptionDate = localStartingDate.plus(i - desiredModulus, ChronoUnit.WEEKS);
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
                     String formattedDay = formatter.format(localExceptionDate);
-                    exDate.append(formattedDay).append(hourClass);
+                    exDate.append(formattedDay).append(hourActivity);
                 }
             }
         }
@@ -228,14 +228,14 @@ public class TimetableBuilder {
         if (holidayWeek == 12) {
             timeZone = ":00.000+03:00";
         }
-        DateTime start = DateTime.parseRfc3339(startingDate + "T" + newClass.getStartingHour() + timeZone); 
-        DateTime end = DateTime.parseRfc3339(startingDate + "T" + newClass.getEndingHour() + timeZone);
+        DateTime start = DateTime.parseRfc3339(startingDate + "T" + newActivity.getStartingHour() + timeZone); 
+        DateTime end = DateTime.parseRfc3339(startingDate + "T" + newActivity.getEndingHour() + timeZone);
 
         event.setStart(new EventDateTime().setDateTime(start).setTimeZone("Europe/Bucharest"));
         event.setEnd(new EventDateTime().setDateTime(end).setTimeZone("Europe/Bucharest"));
         event.setRecurrence(recurrenceSet);
 
-        System.out.println("Generating event for " + event.getSummary() + " " + newClass.getTypeOfClass());
+        System.out.println("Generating event for " + event.getSummary() + " " + newActivity.getTypeOfActivity());
         service.events().insert(calendarId, event).execute();
     }
 
@@ -247,9 +247,9 @@ public class TimetableBuilder {
      * @throws IOException
      */
     public static void addTimetableInCalendar(String calendarId, Timetable timetable) throws IOException {
-        List<Class> allClasses = timetable.getDays();
-        for (Class nextClass : allClasses) {
-            addClass(calendarId, nextClass, timetable.getCurrentNoOfWeeks(),
+        List<Activity> allActivities = timetable.getDays();
+        for (Activity nextActivity : allActivities) {
+            addActivity(calendarId, nextActivity, timetable.getCurrentNoOfWeeks(),
                     timetable.getCurrentStartingDate(), timetable.getCurrentHolidayWeek(),
                     timetable.getCurrentHolidayLength());
         }
