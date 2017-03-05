@@ -6,41 +6,29 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import utils.ParseURL;
+import utils.SemesterInfo;
 
 /**
  * Created on 10.09.2016.
  */
 public class Timetable {
-    private static final int NO_OF_DAYS_IN_TIMETABLE = 7;
-
-    private static final int NO_OF_WEEKS_FIRST_SEMESTER = 16;
-    private static final int CHRISTMAS_HOLIDAY = 12;
-    private static final int CHRISTMAS_HOLIDAY_LENGTH = 2;
-
-    private static final int NO_OF_WEEKS_SECOND_SEMESTER = 15;
-    private static final int EASTER_HOLIDAY = 7;
-    private static final int EASTER_HOLIDAY_LENGTH = 1;
-    
-    private static final String STARTING_DATE_FIRST_SEMESTER = "2016-10-03";
-    private static final String STARTING_DATE_SECOND_SEMESTER = "2017-02-27";
-    
-
     /**
      * The core information of the timetable
      */
+    public static final int NO_OF_DAYS_IN_TIMETABLE = 7;
+
     private final Day[] days = new Day[NO_OF_DAYS_IN_TIMETABLE];
     private final String group;
     private final String semiGroup;
     private final int semester;
 
     /**
-     * Dynamically decided details of the current semester
+     * Dynamically decided details of the semester
      */
-    private final int currentNoOfWeeks;
-    private final String currentStartingDate;
-    private final int currentHolidayWeek;
-    private final int currentHolidayLength;
-
+    private final int noOfWeeks;
+    private final String startingDate;
+    private final int holidayWeek;
+    private final int holidayLength;
 
     /**
      * Constructor for the timetable. It parses all the lines, storing the necessary information for the given group.
@@ -55,11 +43,10 @@ public class Timetable {
         
         semester = website.getSemester();
 
-        //Determine the information of the current semester (holiday length, number of weeks in the semester etc.)
-        currentNoOfWeeks = semester == 1 ? NO_OF_WEEKS_FIRST_SEMESTER : NO_OF_WEEKS_SECOND_SEMESTER;
-        currentStartingDate = semester == 1 ? STARTING_DATE_FIRST_SEMESTER : STARTING_DATE_SECOND_SEMESTER;
-        currentHolidayWeek = semester == 1 ? CHRISTMAS_HOLIDAY : EASTER_HOLIDAY;
-        currentHolidayLength = semester == 1 ? CHRISTMAS_HOLIDAY_LENGTH : EASTER_HOLIDAY_LENGTH;
+        noOfWeeks = SemesterInfo.getNoOfWeeks(semester); 
+        startingDate = SemesterInfo.getStartingDate(semester); 
+        holidayWeek = SemesterInfo.getHolidayStartingWeek(semester);
+        holidayLength = SemesterInfo.getHolidayLength(semester); 
 
         for (int i = 0; i < NO_OF_DAYS_IN_TIMETABLE; i++) {
             days[i] = new Day();
@@ -230,20 +217,20 @@ public class Timetable {
         return semester;
     }
 
-    public int getCurrentNoOfWeeks() {
-        return currentNoOfWeeks;
+    public int getNoOfWeeks() {
+        return noOfWeeks;
     }
 
-    public String getCurrentStartingDate() {
-        return currentStartingDate;
+    public String getStartingDate() {
+        return startingDate;
     }
 
-    public int getCurrentHolidayWeek() {
-        return currentHolidayWeek;
+    public int getHolidayWeek() {
+        return holidayWeek;
     }
 
-    public int getCurrentHolidayLength() {
-        return currentHolidayLength;
+    public int getHolidayLength() {
+        return holidayLength;
     }
 
     @Override

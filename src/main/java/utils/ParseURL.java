@@ -67,5 +67,4 @@ public class ParseURL {
         String[] parts = website.getPath().split("-");
         return parts[1].charAt(0) - '0';
     }
-
 }
