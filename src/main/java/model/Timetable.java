@@ -22,6 +22,37 @@ public class Timetable {
     private final String semiGroup;
     private final int semester;
 
+    private List<String> getTableOfGroup(List<String> htmlCode, final String group) {
+        Pattern beginningOfTable = Pattern.compile("<table .*>");
+        Pattern endOfTable = Pattern.compile("</table>");
+
+        int wantedTable = group.charAt(group.length() - 1) - '0';
+        int indexOfBeginning = -1, indexOfEnd = -1;
+
+        for (int i = 0, foundTable = 0; i < htmlCode.size(); i++) {
+            if (foundTable < wantedTable) {
+                Matcher matcherTable = beginningOfTable.matcher(htmlCode.get(i));
+                if (matcherTable.matches()) {
+                    foundTable++;
+                    if (wantedTable == foundTable) {
+                        indexOfBeginning = i + 1;
+                    }
+                }
+            }
+
+            if (foundTable == wantedTable) {
+                Matcher matcherEndTable = endOfTable.matcher(htmlCode.get(i));
+                if (matcherEndTable.matches()) {
+                    indexOfEnd = i;
+                    break;
+                }
+            }
+        }
+
+        return htmlCode.subList(indexOfBeginning, indexOfEnd);
+    }
+
+
     /**
      * Constructor for the timetable. It parses all the lines, storing the necessary information for the given group.
      *
