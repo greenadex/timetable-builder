@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import utils.ParseURL;
-import utils.SemesterInfo;
 
 /**
  * Created on 10.09.2016.
@@ -52,6 +51,22 @@ public class Timetable {
         return htmlCode.subList(indexOfBeginning, indexOfEnd);
     }
 
+    private Activity processRow(List<String> row) {
+        Activity activity = new Activity();
+        int currentColumn = 0;
+
+        for (String column : row) {
+            Pattern informationPattern = Pattern.compile(".*>([^<]+)<.*");
+            Matcher matcher = informationPattern.matcher(column);
+            if (matcher.find()) {
+                String information = matcher.group(1);
+                activity.setInformation(currentColumn, information);
+            }
+            currentColumn++;
+        }
+
+        return activity;
+    }
 
     /**
      * Constructor for the timetable. It parses all the lines, storing the necessary information for the given group.
@@ -75,11 +90,12 @@ public class Timetable {
         Pattern beginningOfTable = Pattern.compile("<table .*>");
         Pattern header1 = Pattern.compile("<h1>.*</h1>");
 
+        System.out.println(processRow(urlLines.subList(19, 28)));
+
         int currentRow = -1;
         int currentColumn = -1;
 
         boolean inTheRightTable = false, rowOutOfScope = false;
-
         Activity nextActivity = null;
         List<Activity> allActivities = new ArrayList<>();
 
