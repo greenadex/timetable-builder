@@ -23,14 +23,6 @@ public class Timetable {
     private final int semester;
 
     /**
-     * Dynamically decided details of the semester
-     */
-    private final int noOfWeeks;
-    private final String startingDate;
-    private final int holidayWeek;
-    private final int holidayLength;
-
-    /**
      * Constructor for the timetable. It parses all the lines, storing the necessary information for the given group.
      *
      * @param website - a ParseURL object containing the HTML source code lines
@@ -42,11 +34,6 @@ public class Timetable {
         this.semiGroup = semiGroup;
         
         semester = website.getSemester();
-
-        noOfWeeks = SemesterInfo.getNoOfWeeks(semester); 
-        startingDate = SemesterInfo.getStartingDate(semester); 
-        holidayWeek = SemesterInfo.getHolidayStartingWeek(semester);
-        holidayLength = SemesterInfo.getHolidayLength(semester); 
 
         for (int i = 0; i < NO_OF_DAYS_IN_TIMETABLE; i++) {
             days[i] = new Day();
@@ -66,7 +53,6 @@ public class Timetable {
         List<Activity> allActivities = new ArrayList<>();
 
         String currentGroup = "";
-
         for (String line : urlLines) {
 
             //Gets the current group in case it encounters a header
@@ -215,22 +201,6 @@ public class Timetable {
 
     public int getSemester() {
         return semester;
-    }
-
-    public int getNoOfWeeks() {
-        return noOfWeeks;
-    }
-
-    public String getStartingDate() {
-        return startingDate;
-    }
-
-    public int getHolidayWeek() {
-        return holidayWeek;
-    }
-
-    public int getHolidayLength() {
-        return holidayLength;
     }
 
     @Override

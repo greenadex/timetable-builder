@@ -37,7 +37,7 @@ public class Main {
         System.out.println("Creating new calendar...");
         String calendarId = TimetableBuilder.createCalendar(timetable);
 
-        TimetableBuilder.addTimetableInCalendar(calendarId, timetable);
+        TimetableBuilder.addTimetable(calendarId, timetable);
         System.out.println("All done!");
     }
 }
