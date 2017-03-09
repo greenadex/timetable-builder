@@ -72,6 +72,17 @@ public class Activity {
         this.group = group;
     }
 
+    public String getSemiGroup() {
+        if (group.contains("/")) {
+            return group.substring(group.length() - 1);
+        }
+        return "*";
+    }
+
+    public boolean isForSemiGroup(String semiGroup) {
+        return getSemiGroup().equals("*") || semiGroup.equals("*") || getSemiGroup().equals(semiGroup);
+    }
+
     public String getTypeOfActivity() {
         return typeOfActivity;
     }

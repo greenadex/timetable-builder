@@ -278,7 +278,7 @@ public class TimetableBuilder {
      * @throws IOException
      */
     public static void addTimetable(String calendarId, Timetable timetable) throws IOException {
-        List<Activity> allActivities = timetable.getDays();
+        List<Activity> allActivities = timetable.getAllActivities();
         for (Activity nextActivity : allActivities) {
             addActivity(calendarId, nextActivity, timetable.getSemester());
         }

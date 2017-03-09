@@ -22,17 +22,13 @@ public class Main {
         System.out.printf("Input the group:\n");
         String groupNumber = scanner.nextLine();
 
-        System.out.printf("Input the semi-group (or * for all semi-groups):\n");
-        String semiGroupNumber = scanner.nextLine();
+        String semiGroupNumber;
+        do {
+            System.out.printf("Input the semi-group (1, 2 or * for both semi-groups):\n");
+            semiGroupNumber = scanner.nextLine();
+        } while (!semiGroupNumber.equals("*") && !semiGroupNumber.equals("1") && !semiGroupNumber.equals("2"));
 
-        ParseURL parseURL;
-        try {
-            parseURL = new ParseURL(link);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-
+        ParseURL parseURL = new ParseURL(link);
         Timetable timetable = new Timetable(parseURL, groupNumber, semiGroupNumber);
         System.out.println("Creating new calendar...");
         String calendarId = TimetableBuilder.createCalendar(timetable);
