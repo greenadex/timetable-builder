@@ -110,14 +110,8 @@ public class Timetable {
 
     private boolean tableExists(List<String> htmlCode, String group) {
         Pattern groupPattern = Pattern.compile(".*Grupa " + group + ".*");
-        for (String line : htmlCode) {
-            Matcher matcher = groupPattern.matcher(line);
-            if (matcher.matches()) {
-                return true;
-            }
-        }
-
-        return false;
+        return htmlCode.stream()
+                .anyMatch(line -> groupPattern.matcher(line).matches());
     }
 
     private Activity processRow(List<String> row) {
