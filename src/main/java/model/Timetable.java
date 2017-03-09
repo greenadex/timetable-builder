@@ -90,8 +90,6 @@ public class Timetable {
         Pattern beginningOfTable = Pattern.compile("<table .*>");
         Pattern header1 = Pattern.compile("<h1>.*</h1>");
 
-        System.out.println(processRow(urlLines.subList(19, 28)));
-
         int currentRow = -1;
         int currentColumn = -1;
 
