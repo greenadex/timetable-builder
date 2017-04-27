@@ -307,4 +307,8 @@ public class TimetableBuilder {
 
         return service.calendars().insert(newCalendar).execute().getId();
     }
+
+    public static void deleteCalendar(String calendarID) throws IOException {
+        service.calendars().delete(calendarID).execute();
+    }
 }

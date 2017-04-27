@@ -9,14 +9,17 @@ version = '1.0'
 
 run {
     standardInput = System.in
+    if (project.hasProperty("appArgs")) {
+        args Eval.me(appArgs)
+    }
 }
 
 repositories {
-        mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-        compile 'com.google.api-client:google-api-client:1.22.0'
-        compile 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
-        compile 'com.google.apis:google-api-services-calendar:v3-rev234-1.22.0'
+    compile 'com.google.api-client:google-api-client:1.22.0'
+    compile 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
+    compile 'com.google.apis:google-api-services-calendar:v3-rev234-1.22.0'
 }
