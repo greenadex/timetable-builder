@@ -164,8 +164,8 @@ public class TimetableBuilder {
     }
 
     private static void setStartAndEndDate(Event event, Activity activity, int semester) {
-        String startingDate = getStartingDateOfActivity(activity,semester).toString(),
-                 timeZone = (semester == 1 ? ":00.000+03:00" : ":00.000+02:00");
+        String startingDate = getStartingDateOfActivity(activity, semester).toString(),
+                timeZone = (semester == 1 ? ":00.000+03:00" : ":00.000+02:00");
 
         DateTime start = DateTime.parseRfc3339(startingDate + "T" + activity.getStartingHour() + timeZone);
         DateTime end = DateTime.parseRfc3339(startingDate + "T" + activity.getEndingHour() + timeZone);
@@ -174,7 +174,7 @@ public class TimetableBuilder {
         event.setEnd(new EventDateTime().setDateTime(end).setTimeZone("Europe/Bucharest"));
     }
 
-    private static void setRecurrence(Event event, Activity activity, int semester) {
+    private static void setRecurrence(Event event, int semester) {
         String recurrence = "RRULE:FREQ=WEEKLY;COUNT=" + SemesterInfo.getNoOfWeeks(semester);
         event.setRecurrence(Collections.singletonList(recurrence));
     }
@@ -182,7 +182,7 @@ public class TimetableBuilder {
     private static void deleteExtraEvents(String calendarID, Activity activity, List<Event> items, int semester)
             throws IOException {
         int holidayLength = SemesterInfo.getHolidayLength(semester),
-            startingWeekHoliday = SemesterInfo.getHolidayStartingWeek(semester);
+                startingWeekHoliday = SemesterInfo.getHolidayStartingWeek(semester);
 
         for (int week = 0; week < holidayLength; week++) {
             service.events().delete(calendarID, items.get(startingWeekHoliday + week).getId()).execute();
@@ -222,9 +222,9 @@ public class TimetableBuilder {
     /**
      * Adds a new class (a new event) of the timetable to the calendar
      *
-     * @param calendarId           - the id of the calendar where the new event will be added
-     * @param activity             - the Activity object holding the information of the class to be added
-     * @param semester             - the activity's semester
+     * @param calendarId - the id of the calendar where the new event will be added
+     * @param activity   - the Activity object holding the information of the class to be added
+     * @param semester   - the activity's semester
      * @throws IOException
      */
     private static void addActivity(String calendarId, Activity activity, int semester) throws IOException {
@@ -235,8 +235,7 @@ public class TimetableBuilder {
         setDescription(event, activity);
         setColor(event, activity);
         setStartAndEndDate(event, activity, semester);
-        setRecurrence(event, activity, semester);
-
+        setRecurrence(event, semester);
 
         System.out.println("Generating event for " + event.getSummary() + " " + activity.getTypeOfActivity());
         event = service.events().insert(calendarId, event).execute();
@@ -269,8 +268,8 @@ public class TimetableBuilder {
         Calendar newCalendar = new Calendar();
 
         String summary = timetable.getSemiGroup().equals("*") ?
-                    timetable.getGroup() + " Sem." + timetable.getSemester() :
-                    timetable.getGroup() + "/" + timetable.getSemiGroup() + " Sem." + timetable.getSemester();
+                timetable.getGroup() + " Sem." + timetable.getSemester() :
+                timetable.getGroup() + "/" + timetable.getSemiGroup() + " Sem." + timetable.getSemester();
         newCalendar.setSummary(summary);
 
         String description = "Timetable for group " + timetable.getGroup() + " for the semester " +
