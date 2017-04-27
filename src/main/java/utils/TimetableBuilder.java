@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -123,12 +124,6 @@ public class TimetableBuilder {
                 .build();
     }
 
-    private static String formatExceptionDate(LocalDate exceptionDate, String hour) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String formattedExceptionDate = formatter.format(exceptionDate);
-        return formattedExceptionDate + hour;
-    }
-
     private static LocalDate getStartingDateOfActivity(Activity activity, int semester) {
         String startingDate = SemesterInfo.getStartingDate(semester);
         LocalDate localStartingDate = LocalDate.of(Integer.parseInt(startingDate.substring(0, 4)),
@@ -136,72 +131,7 @@ public class TimetableBuilder {
                 Integer.parseInt(startingDate.substring(8)));
 
         localStartingDate = localStartingDate.plus(FromDayToInteger.getInteger(activity.getDay()), ChronoUnit.DAYS);
-        if (activity.getFrequency().contains("2")) {
-            localStartingDate = localStartingDate.plus(1, ChronoUnit.WEEKS);
-        }
-
         return localStartingDate;
-    }
-
-    private static int getNoOfOccurrencesOfActivity(Activity activity, int semester) {
-        int occurrence = SemesterInfo.getNoOfWeeks(semester);
-        if (!activity.getFrequency().isEmpty()) {
-            occurrence /= 2;
-        }
-        return occurrence;
-    }
-
-    private static String getFormattedHourOfActivity(Activity activity) {
-        int hour = Integer.parseInt(activity.getStartingHour().substring(0, 2));
-        String hourFormat = Integer.toString(hour);
-        if (hourFormat.length() == 1)
-            hourFormat = "0" + hourFormat;
-        return "T" + hourFormat + activity.getStartingHour().substring(3) + "00";
-    }
-
-    private static String getExceptionDatesOfActivity(Activity activity, int semester) {
-        boolean exceptionDateExists = false;
-        StringBuilder exceptionDates = new StringBuilder("EXDATE;TZID=Europe/Bucharest:");
-
-        int noOfOccurrences = getNoOfOccurrencesOfActivity(activity, semester),
-                firstWeekAfterHoliday = SemesterInfo.getHolidayStartingWeek(semester) +
-                        SemesterInfo.getHolidayLength(semester);
-
-        String hourActivity = getFormattedHourOfActivity(activity);
-        LocalDate localStartingDate = getStartingDateOfActivity(activity, semester);
-
-        int parity = activity.getFrequency().contains("2") ? 1 : 0;
-        for (int week = SemesterInfo.getHolidayStartingWeek(semester); week < firstWeekAfterHoliday; week++) {
-            if (noOfOccurrences == SemesterInfo.getNoOfWeeks(semester)) {
-                exceptionDateExists = true;
-                LocalDate exceptionDate = localStartingDate.plus(week, ChronoUnit.WEEKS);
-                exceptionDates.append(formatExceptionDate(exceptionDate, hourActivity));
-                if (firstWeekAfterHoliday - week > 1) {
-                    exceptionDates.append(",");
-                }
-            } else if (week % 2 == parity) {
-                exceptionDateExists = true;
-                LocalDate exceptionDate = localStartingDate.plus(week - parity, ChronoUnit.WEEKS);
-                exceptionDates.append(formatExceptionDate(exceptionDate, hourActivity));
-            }
-        }
-
-        return exceptionDateExists ? exceptionDates.toString() : "";
-    }
-
-    private static List<String> getRecurrenceOfActivity(Activity activity, int semester) {
-        int noOfOccurrences = getNoOfOccurrencesOfActivity(activity, semester);
-        String intervalOfActivity = noOfOccurrences == SemesterInfo.getNoOfWeeks(semester) ? "" : "INTERVAL=2;";
-
-        List<String> recurrenceSet = new ArrayList<>();
-
-        String exceptionDates = getExceptionDatesOfActivity(activity, semester);
-        if (!exceptionDates.isEmpty()) {
-            recurrenceSet.add(exceptionDates);
-        }
-        recurrenceSet.add("RRULE:FREQ=WEEKLY;COUNT=" + noOfOccurrences + ";" + intervalOfActivity);
-
-        return recurrenceSet;
     }
 
     private static void setSummary(Event event, Activity activity) {
@@ -245,7 +175,48 @@ public class TimetableBuilder {
     }
 
     private static void setRecurrence(Event event, Activity activity, int semester) {
-        event.setRecurrence(getRecurrenceOfActivity(activity, semester));
+        String recurrence = "RRULE:FREQ=WEEKLY;COUNT=" + SemesterInfo.getNoOfWeeks(semester);
+        event.setRecurrence(Collections.singletonList(recurrence));
+    }
+
+    private static void deleteExtraEvents(String calendarID, Activity activity, List<Event> items, int semester)
+            throws IOException {
+        int holidayLength = SemesterInfo.getHolidayLength(semester),
+            startingWeekHoliday = SemesterInfo.getHolidayStartingWeek(semester);
+
+        for (int week = 0; week < holidayLength; week++) {
+            service.events().delete(calendarID, items.get(startingWeekHoliday + week).getId()).execute();
+        }
+
+        if (activity.getFrequency().isEmpty()) {
+            return;
+        }
+
+        int activityParity = activity.getFrequency().contains("1") ? 1 : 0;
+        for (int week = activityParity; week < startingWeekHoliday; week += 2) {
+            service.events().delete(calendarID, items.get(week).getId()).execute();
+        }
+
+        if (holidayLength % 2 != 0) {
+            activityParity = 1 - activityParity;
+        }
+
+        for (int week = startingWeekHoliday + holidayLength + activityParity;
+             week < SemesterInfo.getNoOfWeeks(semester); week += 2) {
+            service.events().delete(calendarID, items.get(week).getId()).execute();
+        }
+    }
+
+    private static void deleteExtraEvents(String calendarID, Activity activity, String eventID, int semester)
+            throws IOException {
+        String pageToken = null;
+        do {
+            Events events =
+                    service.events().instances(calendarID, eventID).setPageToken(pageToken).execute();
+            List<Event> items = events.getItems();
+            deleteExtraEvents(calendarID, activity, items, semester);
+            pageToken = events.getNextPageToken();
+        } while (pageToken != null);
     }
 
     /**
@@ -266,8 +237,11 @@ public class TimetableBuilder {
         setStartAndEndDate(event, activity, semester);
         setRecurrence(event, activity, semester);
 
+
         System.out.println("Generating event for " + event.getSummary() + " " + activity.getTypeOfActivity());
-        service.events().insert(calendarId, event).execute();
+        event = service.events().insert(calendarId, event).execute();
+
+        deleteExtraEvents(calendarId, activity, event.getId(), semester);
     }
 
     /**
