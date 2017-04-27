@@ -16,15 +16,15 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        System.out.printf("Input the link to the timetable (tabelar):\n");
+        System.out.println("Input the link to the timetable (tabelar):");
         String link = scanner.nextLine();
 
-        System.out.printf("Input the group:\n");
+        System.out.println("Input the group:");
         String groupNumber = scanner.nextLine();
 
         String semiGroupNumber;
         do {
-            System.out.printf("Input the semi-group (1, 2 or * for both semi-groups):\n");
+            System.out.println("Input the semi-group (1, 2 or * for both semi-groups):");
             semiGroupNumber = scanner.nextLine();
         } while (!semiGroupNumber.equals("*") && !semiGroupNumber.equals("1") && !semiGroupNumber.equals("2"));
 
