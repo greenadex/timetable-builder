@@ -9,7 +9,7 @@ public class SemesterInfo {
     public static final int EASTER_HOLIDAY = 7;
     public static final int EASTER_HOLIDAY_LENGTH = 1;
     
-    public static final String STARTING_DATE_FIRST_SEMESTER = "2016-10-03";
+    public static final String STARTING_DATE_FIRST_SEMESTER = "2017-10-02";
     public static final String STARTING_DATE_SECOND_SEMESTER = "2017-02-27";
 
     public static int getNoOfWeeks(int semester) {
