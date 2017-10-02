@@ -7,3 +7,5 @@ Command Line Application for generating a timetable-calendar in Google Calendar 
 2. [Gradle](https://gradle.org/install)
 
 **Run**: gradle -q run
+
+If you want only a subset of the activities in the timetable, add the name of the activites that you want to participate to in *filtered_activities.txt* and run the app with: gradle -q run -PappArgs="['filter']".
