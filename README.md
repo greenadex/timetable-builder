@@ -5,7 +5,7 @@ Command Line Application for generating a timetable-calendar in Google Calendar 
 | **Turns this ([cs.ubbcluj.ro](http://www.cs.ubbcluj.ro/files/orar/2017-1/tabelar/index.html))** | ![alt text](https://i.imgur.com/rsytfGp.png "Before") |
 |:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------:|
 |                                                                                                 | ⬇️                                                     |
-| **Into this ([calendar.google.com](https://calendar.google.com))**                              | ![alt text](https://i.imgur.com/2E89kIE.png "After")  |
+| **Into this ([calendar.google.com](https://calendar.google.com))**                              | ![alt text](https://i.imgur.com/7CWbE7t.png "After")  |
 
 ## Prerequisites
 
