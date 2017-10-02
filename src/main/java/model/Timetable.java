@@ -47,6 +47,15 @@ public class Timetable {
         filterActivities();
     }
 
+    public Timetable(ParseURL website, final String group, final String semiGroup, List<String> filteredActivities)
+            throws IOException {
+        this(website, group, semiGroup);
+
+        allActivities = allActivities.stream()
+               .filter(activity -> filteredActivities.contains(activity.getNameOfActivity()))
+               .collect(Collectors.toList());
+    }
+
     private List<String> getTableOfGroup(List<String> htmlCode, final String group) {
         Pattern beginningOfTable = Pattern.compile("<table .*>");
         Pattern endOfTable = Pattern.compile("</table>");
