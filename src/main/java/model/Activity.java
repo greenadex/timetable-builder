@@ -66,7 +66,7 @@ public class Activity {
     /**
      * //TODO replace integers with enum
      */
-    public void setInformation(int number, String information) {
+    void setInformation(int number, String information) {
         switch (number) {
             case 0:
                 dayOfWeek = DayOfWeek.get(information);
