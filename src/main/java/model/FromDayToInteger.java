@@ -9,6 +9,7 @@ import java.util.Map;
 public class FromDayToInteger {
     /**
      * Map which makes the connection between the name of a day in Romanian and its index in a week
+     * TODO: replace with enum
      */
     private static final Map<String, Integer> NAME_OF_DAYS = new HashMap<>();
 

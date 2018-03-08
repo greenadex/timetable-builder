@@ -17,64 +17,31 @@ import com.google.api.services.calendar.model.*;
 import com.google.api.services.calendar.model.Calendar;
 
 import model.Activity;
-import model.FromDayToInteger;
+import model.Activity.Frequency;
 import model.Timetable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.File;
-import java.lang.reflect.Array;
+import java.security.InvalidParameterException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-/**
- * Created on 26.09.2016
- */
 public class TimetableBuilder {
-    /**
-     * Application name.
-     */
-    private static final String APPLICATION_NAME =
-            "TimetableBuilder";
-
-    /**
-     * Directory to store user credentials for this application.
-     */
-    private static final File DATA_STORE_DIR = new File(
-            System.getProperty("user.home"), ".credentials/timetable-builder");
-
-    /**
-     * Global instance of the {@link FileDataStoreFactory}.
-     */
+    private static final String APPLICATION_NAME = "TimetableBuilder";
+    private static final File DATA_STORE_DIR = new File(System.getProperty("user.home"), ".credentials/timetable-builder");
     private static FileDataStoreFactory DATA_STORE_FACTORY;
-
-    /**
-     * Global instance of the JSON factory.
-     */
-    private static final JsonFactory JSON_FACTORY =
-            JacksonFactory.getDefaultInstance();
-
-    /**
-     * Global instance of the HTTP transport.
-     */
+    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static HttpTransport HTTP_TRANSPORT;
-
-    /**
-     * Global instance of the Calendar service.
-     */
     private static com.google.api.services.calendar.Calendar service;
 
     /**
-     * Global instance of the scopes required by this application.
-     * <p>
      * If modifying these scopes, delete your previously saved credentials
      * at ~/.credentials/timetable-builder
      */
-    private static final List<String> SCOPES =
-            Collections.singletonList(CalendarScopes.CALENDAR);
+    private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR);
 
     static {
         try {
@@ -87,20 +54,10 @@ public class TimetableBuilder {
         }
     }
 
-    /**
-     * Creates an authorized Credential object.
-     *
-     * @return an authorized Credential object.
-     * @throws IOException
-     */
     private static Credential authorize() throws IOException {
-        // Load client secrets.
-        InputStream in =
-                TimetableBuilder.class.getResourceAsStream("/client.json");
-        GoogleClientSecrets clientSecrets =
-                GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+        InputStream in = TimetableBuilder.class.getResourceAsStream("/client.json");
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
-        // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow =
                 new GoogleAuthorizationCodeFlow.Builder(
                         HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
@@ -110,12 +67,6 @@ public class TimetableBuilder {
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
 
-    /**
-     * Build and return an authorized Calendar client service.
-     *
-     * @return an authorized Calendar client service
-     * @throws IOException
-     */
     private static com.google.api.services.calendar.Calendar getCalendarService() throws IOException {
         Credential credential = authorize();
         return new com.google.api.services.calendar.Calendar.Builder(
@@ -130,35 +81,42 @@ public class TimetableBuilder {
                 Integer.parseInt(startingDate.substring(5, 7)),
                 Integer.parseInt(startingDate.substring(8)));
 
-        localStartingDate = localStartingDate.plus(FromDayToInteger.getInteger(activity.getDay()), ChronoUnit.DAYS);
+        localStartingDate = localStartingDate.plus(activity.getDayOfWeek().index, ChronoUnit.DAYS);
         return localStartingDate;
     }
 
     private static void setSummary(Event event, Activity activity) {
-        String title = activity.getNameOfActivity();
-        if (activity.getTypeOfActivity().equals("Laborator") && activity.getGroup().contains("/"))
+        String title = activity.getName();
+        if (activity.getType() == Activity.Type.Laboratory && activity.getGroup().contains("/"))
             title += " " + activity.getGroup();
         event.setSummary(title);
     }
 
     private static void setLocation(Event event, Activity activity) {
-        event.setLocation(activity.getActivityRoom());
+        event.setLocation(activity.getRoom());
     }
 
     private static void setDescription(Event event, Activity activity) {
-        event.setDescription(activity.getTypeOfActivity() + ' ' + activity.getNameOfActivity() + " - "
+        event.setDescription(activity.getType().name() + ' ' + activity.getName() + " - "
                 + activity.getProfessor());
     }
 
     private static void setColor(Event event, Activity activity) {
-        int colorId = 4; //light red
-        //11 for dark red
+        final int colorId;
 
-        if (activity.getTypeOfActivity().equals("Seminar"))
-            colorId = 10; //green
-
-        if (activity.getTypeOfActivity().equals("Laborator"))
-            colorId = 5; //yellow
+        switch (activity.getType()) {
+            case Lecture:
+                colorId = 4; // light red
+                break;
+            case Seminar:
+                colorId = 10; // green
+                break;
+            case Laboratory:
+                colorId = 5; // yellow
+                break;
+            default:
+                throw new InvalidParameterException("No such activity type: " + activity.getType());
+        }
 
         event.setColorId(Integer.toString(colorId));
     }
@@ -167,8 +125,8 @@ public class TimetableBuilder {
         String startingDate = getStartingDateOfActivity(activity, semester).toString(),
                 timeZone = (semester == 1 ? ":00.000+03:00" : ":00.000+02:00");
 
-        DateTime start = DateTime.parseRfc3339(startingDate + "T" + activity.getStartingHour() + timeZone);
-        DateTime end = DateTime.parseRfc3339(startingDate + "T" + activity.getEndingHour() + timeZone);
+        DateTime start = DateTime.parseRfc3339(startingDate + "T" + activity.getStartTime() + timeZone);
+        DateTime end = DateTime.parseRfc3339(startingDate + "T" + activity.getEndTime() + timeZone);
 
         event.setStart(new EventDateTime().setDateTime(start).setTimeZone("Europe/Bucharest"));
         event.setEnd(new EventDateTime().setDateTime(end).setTimeZone("Europe/Bucharest"));
@@ -188,11 +146,11 @@ public class TimetableBuilder {
             service.events().delete(calendarID, items.get(startingWeekHoliday + week).getId()).execute();
         }
 
-        if (activity.getFrequency().isEmpty()) {
+        if (activity.getFrequency() == Activity.Frequency.Weekly) {
             return;
         }
 
-        int activityParity = activity.getFrequency().contains("1") ? 1 : 0;
+        int activityParity = activity.getFrequency() == Frequency.EveryOddWeek ? 1 : 0;
         for (int week = activityParity; week < startingWeekHoliday; week += 2) {
             service.events().delete(calendarID, items.get(week).getId()).execute();
         }
@@ -237,7 +195,7 @@ public class TimetableBuilder {
         setStartAndEndDate(event, activity, semester);
         setRecurrence(event, semester);
 
-        System.out.println("Generating event for " + event.getSummary() + " " + activity.getTypeOfActivity());
+        System.out.println("Generating event for " + event.getSummary() + " " + activity.getType());
         event = service.events().insert(calendarId, event).execute();
 
         deleteExtraEvents(calendarId, activity, event.getId(), semester);

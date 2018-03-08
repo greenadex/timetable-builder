@@ -1,153 +1,111 @@
 package model;
 
-/**
- * Created on 11.09.2016.
- */
+import lombok.Getter;
+
+import java.security.InvalidParameterException;
+
+@Getter
 public class Activity {
-    private String day;
-    private String period;
-    private String startingHour;
-    private String endingHour;
-    private String frequency;
-    private String classRoom;
-    private String group;
-    private String typeOfActivity;
-    private String nameOfActivity;
-    private String professor;
+    public enum Frequency {
+        Weekly, EveryOddWeek, EveryEvenWeek;
 
-    public String getDay() {
-        return day;
-    }
+        static Frequency get(String info) {
+            if (info.contains("1")) {
+                return EveryOddWeek;
+            }
 
-    public void setDay(String day) {
-        this.day = day;
-    }
+            if (info.contains("2")) {
+                return EveryEvenWeek;
+            }
 
-    public String getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(String period) {
-        this.period = period;
-        String[] hours = period.split("-");
-        startingHour = (hours[0].length() == 1 ? "0" : "") + hours[0] + ":00";
-        endingHour = (hours[1].length() == 1 ? "0" : "") + hours[1] + ":00";
-    }
-
-    public String getStartingHour() {
-        return startingHour;
-    }
-
-    public String getEndingHour() {
-        return endingHour;
-    }
-
-    public String getFrequency() {
-        return frequency;
-    }
-
-    public void setFrequency(String frequency) {
-        //In the HTML source code, no frequency is signaled by using '&nbsp;'; therefore, we map all these occurences
-        //to an empty String
-        if (frequency.equals("&nbsp;")) {
-            this.frequency = "";
-        } else {
-            this.frequency = frequency;
+            return Weekly;
         }
     }
 
-    public String getActivityRoom() {
-        return classRoom;
+    public enum Type {
+        Lecture, Seminar, Laboratory;
+
+        static Type get(String info) {
+            switch (info) {
+                case "Curs":
+                    return Lecture;
+                case "Seminar":
+                    return Seminar;
+                case "Laborator":
+                    return Laboratory;
+                default:
+                    throw new InvalidParameterException("Invalid activity type: " + info);
+            }
+        }
     }
 
-    public void setActivityRoom(String classRoom) {
-        this.classRoom = classRoom;
+    private DayOfWeek dayOfWeek;
+    private String startTime;
+    private String endTime;
+    private Frequency frequency;
+    private String room;
+    private String group;
+    private Type type;
+    private String name;
+    private String professor;
+
+    Activity() {}
+
+    boolean isForSemiGroup(String semiGroup) {
+        return getSemiGroup().equals("*") || semiGroup.equals("*") || getSemiGroup().equals(semiGroup);
     }
 
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
-    public String getSemiGroup() {
+    private String getSemiGroup() {
         if (group.contains("/")) {
             return group.substring(group.length() - 1);
         }
         return "*";
     }
 
-    public boolean isForSemiGroup(String semiGroup) {
-        return getSemiGroup().equals("*") || semiGroup.equals("*") || getSemiGroup().equals(semiGroup);
-    }
-
-    public String getTypeOfActivity() {
-        return typeOfActivity;
-    }
-
-    public void setTypeOfActivity(String typeOfActivity) {
-        this.typeOfActivity = typeOfActivity;
-    }
-
-    public String getNameOfActivity() {
-        return nameOfActivity;
-    }
-
-    public void setNameOfActivity(String nameOfActivity) {
-        this.nameOfActivity = nameOfActivity;
-    }
-
-    public String getProfessor() {
-        return professor;
-    }
-
-    public void setProfessor(String professor) {
-        this.professor = professor;
-    }
 
     /**
-     * Sets the information based on a number. Each field has a theoretical index associated to id based
-     * on the order of declaration. This function is used when parsing a class from the HTML source code.
-     *
-     * @param number      - the index of the field we wish to set
-     * @param information - the information we wish to add to the current class
+     * //TODO replace integers with enum
      */
     public void setInformation(int number, String information) {
         switch (number) {
             case 0:
-                setDay(information);
+                dayOfWeek = DayOfWeek.get(information);
                 break;
             case 1:
-                setPeriod(information);
+                setStartAndEndTime(information);
                 break;
             case 2:
-                setFrequency(information);
+                frequency = Frequency.get(information);
                 break;
             case 3:
-                setActivityRoom(information);
+                room = information;
                 break;
             case 4:
-                setGroup(information);
+                group = information;
                 break;
             case 5:
-                setTypeOfActivity(information);
+                type = Type.get(information);
                 break;
             case 6:
-                setNameOfActivity(information);
+                name = information;
                 break;
             case 7:
-                setProfessor(information);
+                professor = information;
                 break;
             default:
-                throw new IllegalArgumentException("Error parsing activity! Number is " + number);
+                throw new IllegalArgumentException("Error parsing activity! No such field: " + number);
         }
+    }
+
+    private void setStartAndEndTime(String period) {
+        String[] hours = period.split("-");
+        startTime = (hours[0].length() == 1 ? "0" : "") + hours[0] + ":00";
+        endTime = (hours[1].length() == 1 ? "0" : "") + hours[1] + ":00";
     }
 
     @Override
     public String toString() {
-        return String.format("%s | %s | %s | %s | %s | %s | %s | %s", day, period, frequency, classRoom, group,
-                typeOfActivity, nameOfActivity, professor);
+        return String.format("%s | %s-%s | %s | %s | %s | %s | %s | %s",
+                dayOfWeek, startTime, endTime, frequency, room, group, type, name, professor);
     }
 }

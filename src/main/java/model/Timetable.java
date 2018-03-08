@@ -52,7 +52,7 @@ public class Timetable {
         this(website, group, semiGroup);
 
         allActivities = allActivities.stream()
-               .filter(activity -> filteredActivities.contains(activity.getNameOfActivity()))
+               .filter(activity -> filteredActivities.contains(activity.getName()))
                .collect(Collectors.toList());
     }
 
