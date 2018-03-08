@@ -1,16 +1,16 @@
-package utils;
+package model;
 
 public class SemesterInfo {
-    public static final int NO_OF_WEEKS_FIRST_SEMESTER = 16;
-    public static final int CHRISTMAS_HOLIDAY = 12;
-    public static final int CHRISTMAS_HOLIDAY_LENGTH = 2;
+    private static final int NO_OF_WEEKS_FIRST_SEMESTER = 16;
+    private static final int CHRISTMAS_HOLIDAY = 12;
+    private static final int CHRISTMAS_HOLIDAY_LENGTH = 2;
 
-    public static final int NO_OF_WEEKS_SECOND_SEMESTER = 13;
-    public static final int EASTER_HOLIDAY = 6;
-    public static final int EASTER_HOLIDAY_LENGTH = 1;
+    private static final int NO_OF_WEEKS_SECOND_SEMESTER = 13;
+    private static final int EASTER_HOLIDAY = 6;
+    private static final int EASTER_HOLIDAY_LENGTH = 1;
     
-    public static final String STARTING_DATE_FIRST_SEMESTER = "2017-10-02";
-    public static final String STARTING_DATE_SECOND_SEMESTER = "2018-02-26";
+    private static final String STARTING_DATE_FIRST_SEMESTER = "2017-10-02";
+    private static final String STARTING_DATE_SECOND_SEMESTER = "2018-02-26";
 
     public static int getNoOfWeeks(int semester) {
         return (semester == 1 ? NO_OF_WEEKS_FIRST_SEMESTER : NO_OF_WEEKS_SECOND_SEMESTER);

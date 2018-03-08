@@ -18,6 +18,7 @@ import com.google.api.services.calendar.model.Calendar;
 
 import model.Activity;
 import model.Activity.Frequency;
+import model.SemesterInfo;
 import model.Timetable;
 
 import java.io.IOException;
