@@ -1,5 +1,4 @@
 apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'application'
 
 mainClassName = 'Main'
@@ -7,11 +6,16 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 version = '1.0'
 
-run {
-  standardInput = System.in
-  if (project.hasProperty("appArgs")) {
-    args Eval.me(appArgs)
+//https://www.mkyong.com/gradle/gradle-create-a-jar-file-with-dependencies
+task fatJar(type: Jar) {
+  manifest {
+    attributes 'Implementation-Title': 'Gradle Jar File Example',
+            'Implementation-Version': version,
+            'Main-Class': 'Main'
   }
+  baseName = project.name + '-all'
+  from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+  with jar
 }
 
 repositories {
@@ -23,6 +27,7 @@ dependencies {
   compile 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
   compile 'com.google.apis:google-api-services-calendar:v3-rev234-1.22.0'
   compile 'com.google.guava:guava:24.0-jre'
+  compile 'info.picocli:picocli:2.3.0'
   compileOnly "org.projectlombok:lombok:1.16.16"
   testCompile "com.google.truth:truth:0.39"
   testCompile "com.google.truth.extensions:truth-java8-extension:0.39"
