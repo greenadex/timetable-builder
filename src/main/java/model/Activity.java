@@ -50,7 +50,7 @@ public class Activity {
     private String professor;
 
     boolean isForSemiGroup(String semiGroup) {
-        return getSemiGroup().equals("*") || semiGroup.equals("*") || getSemiGroup().equals(semiGroup);
+        return getSemiGroup().equals("0") || semiGroup.equals("0") || getSemiGroup().equals(semiGroup);
     }
 
     private String getSemiGroup() {

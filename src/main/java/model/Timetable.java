@@ -7,25 +7,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import utils.ParseURL;
+import utils.TimetableURL;
 
-/**
- * Created on 10.09.2016.
- */
 public class Timetable {
     private final String group;
     private final String semiGroup;
     private final int semester;
     private List<Activity> allActivities;
 
-    /**
-     * Constructor for the timetable. It parses all the lines, storing the necessary information for the given group.
-     *
-     * @param website - a ParseURL object containing the HTML source code lines
-     * @param group   - the group number
-     * @throws IOException
-     */
-    public Timetable(ParseURL website, final String group, final String semiGroup) throws IOException {
+    public Timetable(TimetableURL website, final String group, final String semiGroup) throws IOException {
         this.group = group;
         this.semiGroup = semiGroup;
         allActivities = new ArrayList<>();
@@ -43,7 +33,7 @@ public class Timetable {
         filterActivities();
     }
 
-    public Timetable(ParseURL website, final String group, final String semiGroup, List<String> filteredActivities)
+    public Timetable(TimetableURL website, final String group, final String semiGroup, List<String> filteredActivities)
             throws IOException {
         this(website, group, semiGroup);
 

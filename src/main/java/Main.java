@@ -2,7 +2,7 @@ import model.StudentInfo;
 import model.Timetable;
 import model.exception.InvalidParameterException;
 import picocli.CommandLine;
-import utils.ParseURL;
+import utils.TimetableURL;
 import utils.TimetableBuilder;
 
 import java.io.*;
@@ -13,14 +13,28 @@ import java.util.stream.Collectors;
 public class Main implements Runnable {
     public static void main(String[] args) {
         System.setProperty("picocli.usage.width", "150");
+        System.out.println();
+
         Main app = new Main();
         CommandLine commandLine = new CommandLine(app);
-        commandLine.parse(args);
+        try {
+            commandLine.parse(args);
+        } catch (Exception err) {
+            System.out.println(
+                    err.getMessage() + ". Run the app with the '--help' flag in order to show the help message.");
+            return;
+        }
+
         if (commandLine.isUsageHelpRequested()) {
             commandLine.usage(System.out);
             return;
         }
-        CommandLine.run(app, System.out, args);
+
+        try {
+            CommandLine.run(app, System.out, args);
+        } catch (CommandLine.ExecutionException err) {
+            System.out.println(err.getCause().getMessage());
+        }
     }
 
     @CommandLine.Parameters(index = "0", description = "The link to the timetable, in 'tabelar' form." +
@@ -48,12 +62,6 @@ public class Main implements Runnable {
 
     @Override
     public void run() {
-        System.out.println(link);
-        System.out.println(group);
-        System.out.println(semigroup);
-        System.out.println(usageHelpRequested);
-        System.out.println(filterActivities);
-
         validateArgs();
         try {
             tryRunApp();
@@ -65,16 +73,16 @@ public class Main implements Runnable {
     private void validateArgs() {
         if (semigroup < 0 || semigroup > 2) {
             throw new InvalidParameterException("The semigroup given is not valid! The only accepted values are " +
-                    "\'1\' and \'2\'");
+                    "\'1\' and \'2\' (or 0 for both semigroups)");
         }
     }
 
     private void tryRunApp() throws IOException {
         StudentInfo student = new StudentInfo(link, group, semigroup );
 
-        final ParseURL parseURL;
+        final TimetableURL timetableURL;
         try {
-            parseURL = new ParseURL(student.timetableLink);
+            timetableURL = new TimetableURL(student.timetableLink);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return;
@@ -83,9 +91,9 @@ public class Main implements Runnable {
         final Timetable timetable;
         if (filterActivities) {
             List<String> filteredActivities = readFilteredActivities();
-            timetable = new Timetable(parseURL, "" + group, "" + semigroup, filteredActivities);
+            timetable = new Timetable(timetableURL, "" + group, "" + semigroup, filteredActivities);
         } else {
-            timetable = new Timetable(parseURL, "" + group, "" + semigroup);
+            timetable = new Timetable(timetableURL, "" + group, "" + semigroup);
         }
 
         System.out.println("Creating new calendar...");

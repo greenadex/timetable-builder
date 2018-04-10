@@ -8,11 +8,11 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ParseURL {
+public class TimetableURL {
     private final URL website;
     private List<String> lines = null;
 
-    public ParseURL(String url) throws MalformedURLException {
+    public TimetableURL(String url) throws MalformedURLException {
         website = new URL(url);
     }
 
