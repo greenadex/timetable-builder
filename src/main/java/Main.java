@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class Main implements Runnable {
     public static void main(String[] args) {
+        System.out.println(Arrays.toString(args));
         System.setProperty("picocli.usage.width", "150");
         System.out.println();
 
@@ -45,23 +46,25 @@ public class Main implements Runnable {
             description = "The group of the student.\nExample: './run.sh [...] <link> 931'\n")
     private int group;
 
-    @CommandLine.Option(names = "-semigroup",
+    @CommandLine.Option(names = {"-semigroup"},
             description = "The semigroup (1 or 2).\nExample: './run.sh -semigroup=1 [...] <link> <group>'\n")
     private int semigroup;
 
-    @CommandLine.Option(names = "--help", usageHelp = true, description = "Display this help message.\n")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "Display this help message.\n")
     private boolean usageHelpRequested;
 
-    @CommandLine.Option(names = "-filter",
+    @CommandLine.Option(names = {"-f", "--filter"},
             description = "If toggled, the activities added will be only those present in 'filtered_activities.txt'.\n")
     private boolean filterActivities;
 
-    @CommandLine.Option(names = "-debug",
+    @CommandLine.Option(names = { "-d", "--debug"},
             description = "Start the application in debug mode (the calendar will be deleted at the end).\n")
     private boolean debug;
 
     @Override
     public void run() {
+        filterActivities = true;
+        debug = true;
         validateArgs();
         try {
             tryRunApp();
@@ -91,6 +94,7 @@ public class Main implements Runnable {
         final Timetable timetable;
         if (filterActivities) {
             List<String> filteredActivities = readFilteredActivities();
+            System.out.println(filteredActivities);
             timetable = new Timetable(timetableURL, "" + group, "" + semigroup, filteredActivities);
         } else {
             timetable = new Timetable(timetableURL, "" + group, "" + semigroup);

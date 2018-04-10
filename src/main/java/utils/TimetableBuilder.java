@@ -193,28 +193,27 @@ public class TimetableBuilder {
 
     private static void deleteExtraEvents(String calendarID, Activity activity, List<Event> items, int semester)
             throws IOException {
-        int holidayLength = SemesterInfo.getHolidayLength(semester),
-                startingWeekHoliday = SemesterInfo.getHolidayStartWeek(semester);
+        int holidayLength = SemesterInfo.getHolidayLength(semester);
+        int holidayStartWeek = SemesterInfo.getHolidayStartWeek(semester);
 
         for (int week = 0; week < holidayLength; week++) {
-            service.events().delete(calendarID, items.get(startingWeekHoliday + week).getId()).execute();
+            service.events().delete(calendarID, items.get(holidayStartWeek + week).getId()).execute();
         }
 
-        if (activity.getFrequency() == Activity.Frequency.Weekly) {
+        Activity.Frequency frequency = activity.getFrequency();
+        if (frequency == Activity.Frequency.Weekly) {
             return;
         }
 
-        int activityParity = activity.getFrequency() == Frequency.EveryOddWeek ? 1 : 0;
-        for (int week = activityParity; week < startingWeekHoliday; week += 2) {
+        // --------------------------------
+
+        for (int week = frequency.getSkipWeek(); week < holidayStartWeek; week += 2) {
             service.events().delete(calendarID, items.get(week).getId()).execute();
         }
 
-        if (holidayLength % 2 != 0) {
-            activityParity = 1 - activityParity;
-        }
-
-        for (int week = startingWeekHoliday + holidayLength + activityParity;
-             week < SemesterInfo.getNoOfWeeks(semester); week += 2) {
+        int nextWeekAfterHoliday = holidayStartWeek + holidayLength + frequency.getSkipWeek();
+        for (int week = nextWeekAfterHoliday; week < SemesterInfo.getNoOfWeeks(semester); week += 2) {
+            System.out.println("Deleting week " + week + " for frequency " + frequency);
             service.events().delete(calendarID, items.get(week).getId()).execute();
         }
     }

@@ -20,6 +20,18 @@ public class Activity {
 
             return Weekly;
         }
+
+        public int getSkipWeek() {
+            switch (this) {
+                case Weekly:
+                    throw new RuntimeException("Reached getSkipWeek for Weekly activity!");
+                case EveryOddWeek:
+                    return 1;
+                case EveryEvenWeek:
+                    return 0;
+            }
+            return -1;
+        }
     }
 
     public enum Type {

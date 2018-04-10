@@ -27,7 +27,7 @@ dependencies {
   compile 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
   compile 'com.google.apis:google-api-services-calendar:v3-rev234-1.22.0'
   compile 'com.google.guava:guava:24.0-jre'
-  compile 'info.picocli:picocli:3.0.0-alpha-3'
+  compile 'info.picocli:picocli:3.0.0-alpha-4'
   compileOnly "org.projectlombok:lombok:1.16.16"
   testCompile "com.google.truth:truth:0.39"
   testCompile "com.google.truth.extensions:truth-java8-extension:0.39"
