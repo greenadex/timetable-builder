@@ -3,7 +3,7 @@ package model;
 import org.junit.Before;
 import org.junit.Test;
 
-class TimetableTest {
+public class TimetableTest {
     @Before
     public void setUp() {
     }

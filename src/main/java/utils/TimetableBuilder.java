@@ -77,7 +77,7 @@ public class TimetableBuilder {
     }
 
     private static LocalDate getStartingDateOfActivity(Activity activity, int semester) {
-        String startingDate = SemesterInfo.getStartingDate(semester);
+        String startingDate = SemesterInfo.getStartDate(semester);
         LocalDate localStartingDate = LocalDate.of(Integer.parseInt(startingDate.substring(0, 4)),
                 Integer.parseInt(startingDate.substring(5, 7)),
                 Integer.parseInt(startingDate.substring(8)));
@@ -141,7 +141,7 @@ public class TimetableBuilder {
     private static void deleteExtraEvents(String calendarID, Activity activity, List<Event> items, int semester)
             throws IOException {
         int holidayLength = SemesterInfo.getHolidayLength(semester),
-                startingWeekHoliday = SemesterInfo.getHolidayStartingWeek(semester);
+                startingWeekHoliday = SemesterInfo.getHolidayStartWeek(semester);
 
         for (int week = 0; week < holidayLength; week++) {
             service.events().delete(calendarID, items.get(startingWeekHoliday + week).getId()).execute();

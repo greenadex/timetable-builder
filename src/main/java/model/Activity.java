@@ -49,8 +49,6 @@ public class Activity {
     private String name;
     private String professor;
 
-    Activity() {}
-
     boolean isForSemiGroup(String semiGroup) {
         return getSemiGroup().equals("*") || semiGroup.equals("*") || getSemiGroup().equals(semiGroup);
     }

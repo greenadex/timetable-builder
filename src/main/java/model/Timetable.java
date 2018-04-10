@@ -13,10 +13,6 @@ import utils.ParseURL;
  * Created on 10.09.2016.
  */
 public class Timetable {
-    /**
-     * The core information of the timetable
-     */
-
     private final String group;
     private final String semiGroup;
     private final int semester;
