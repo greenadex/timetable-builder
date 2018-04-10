@@ -69,7 +69,7 @@ public class Activity {
         if (group.contains("/")) {
             return group.substring(group.length() - 1);
         }
-        return "*";
+        return "0";
     }
 
 
