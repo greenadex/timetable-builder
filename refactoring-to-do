@@ -1,4 +1,0 @@
-FIX BUG WITH SEMI-GROUP 0
-1. Write tests
-2. Make TimetableBuilder fields non-static
-3. Use scraper for parsing HTML code

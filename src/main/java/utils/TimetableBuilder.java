@@ -118,7 +118,9 @@ public class TimetableBuilder {
     }
 
     private static void setSummary(Event event, Activity activity) {
-        String title = "(" + activity.getType() + ") " + activity.getName();
+        String activityType = activity.getType().toString().substring(0, 3);
+        String title = String.format("(%s) %s", activityType, activity.getName());
+
         if (activity.getType() == Activity.Type.Laboratory && activity.getGroup().contains("/"))
             title += " " + activity.getGroup();
         event.setSummary(title);
@@ -205,15 +207,12 @@ public class TimetableBuilder {
             return;
         }
 
-        // --------------------------------
-
         for (int week = frequency.getSkipWeek(); week < holidayStartWeek; week += 2) {
             service.events().delete(calendarID, items.get(week).getId()).execute();
         }
 
         int nextWeekAfterHoliday = holidayStartWeek + holidayLength + frequency.getSkipWeek();
         for (int week = nextWeekAfterHoliday; week < SemesterInfo.getNoOfWeeks(semester); week += 2) {
-            System.out.println("Deleting week " + week + " for frequency " + frequency);
             service.events().delete(calendarID, items.get(week).getId()).execute();
         }
     }

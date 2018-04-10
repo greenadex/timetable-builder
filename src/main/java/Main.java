@@ -10,32 +10,26 @@ import java.net.MalformedURLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Main implements Runnable {
+public class Main {
     public static void main(String[] args) {
-        System.out.println(Arrays.toString(args));
         System.setProperty("picocli.usage.width", "150");
         System.out.println();
 
-        Main app = new Main();
-        CommandLine commandLine = new CommandLine(app);
+        Main application;
         try {
-            commandLine.parse(args);
+            application = CommandLine.populateCommand(new Main(), args);
         } catch (Exception err) {
             System.out.println(
                     err.getMessage() + ". Run the app with the '--help' flag in order to show the help message.");
             return;
         }
 
-        if (commandLine.isUsageHelpRequested()) {
-            commandLine.usage(System.out);
+        if (application.usageHelpRequested) {
+            CommandLine.usage(application, System.out);
             return;
         }
 
-        try {
-            CommandLine.run(app, System.out, args);
-        } catch (CommandLine.ExecutionException err) {
-            System.out.println(err.getCause().getMessage());
-        }
+        application.run();
     }
 
     @CommandLine.Parameters(index = "0", description = "The link to the timetable, in 'tabelar' form." +
@@ -50,9 +44,6 @@ public class Main implements Runnable {
             description = "The semigroup (1 or 2).\nExample: './run.sh -semigroup=1 [...] <link> <group>'\n")
     private int semigroup;
 
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "Display this help message.\n")
-    private boolean usageHelpRequested;
-
     @CommandLine.Option(names = {"-f", "--filter"},
             description = "If toggled, the activities added will be only those present in 'filtered_activities.txt'.\n")
     private boolean filterActivities;
@@ -61,13 +52,13 @@ public class Main implements Runnable {
             description = "Start the application in debug mode (the calendar will be deleted at the end).\n")
     private boolean debug;
 
-    @Override
-    public void run() {
-        filterActivities = true;
-        debug = true;
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "Display this help message.\n")
+    private boolean usageHelpRequested;
+
+    private void run() {
         validateArgs();
         try {
-            tryRunApp();
+            buildTimetable();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,8 +71,8 @@ public class Main implements Runnable {
         }
     }
 
-    private void tryRunApp() throws IOException {
-        StudentInfo student = new StudentInfo(link, group, semigroup );
+    private void buildTimetable() throws IOException {
+        StudentInfo student = new StudentInfo(link, group, semigroup);
 
         final TimetableURL timetableURL;
         try {
@@ -94,7 +85,6 @@ public class Main implements Runnable {
         final Timetable timetable;
         if (filterActivities) {
             List<String> filteredActivities = readFilteredActivities();
-            System.out.println(filteredActivities);
             timetable = new Timetable(timetableURL, "" + group, "" + semigroup, filteredActivities);
         } else {
             timetable = new Timetable(timetableURL, "" + group, "" + semigroup);
@@ -108,7 +98,8 @@ public class Main implements Runnable {
 
         if (debug) {
             System.out.println("Press ENTER to delete the created calendar!");
-            System.in.read();
+            final int userSignal = System.in.read();
+
             TimetableBuilder.deleteCalendar(calendarId);
             System.out.println("Calendar deleted!");
         }

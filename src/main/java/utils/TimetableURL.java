@@ -32,7 +32,6 @@ public class TimetableURL {
     }
 
     public int getSemester() {
-//        return 1;
         String[] parts = website.getPath().split("-");
         return parts[1].charAt(0) - '0';
     }
