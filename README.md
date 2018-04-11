@@ -2,10 +2,10 @@
 
 Command Line Application for generating a timetable-calendar in Google Calendar based on the timetable given by the Faculty of Mathematics and Computer Science of "Babes-Bolyai" University.
 
-| **Turns this ([cs.ubbcluj.ro](http://www.cs.ubbcluj.ro/files/orar/2017-2/tabelar/index.html))** | ![alt text](https://imgur.com/a/QNe7W "Before") |
+| **Turns this ([cs.ubbcluj.ro](http://www.cs.ubbcluj.ro/files/orar/2017-2/tabelar/index.html))** | ![alt text](https://i.imgur.com/iXBAtAb.png "Before") |
 |:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------:|
 |                                                                                                 | ⬇️                                                     |
-| **Into this ([calendar.google.com](https://calendar.google.com))**                              | ![alt text](https://imgur.com/a/JCFV6 "After")  |
+| **Into this ([calendar.google.com](https://calendar.google.com))**                              | ![alt text](https://i.imgur.com/0EhSThe.png "After")  |
 
 ## Prerequisites
 
