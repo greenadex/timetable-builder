@@ -2,10 +2,10 @@
 
 Command Line Application for generating a timetable-calendar in Google Calendar based on the timetable given by the Faculty of Mathematics and Computer Science of "Babes-Bolyai" University.
 
-| **Turns this ([cs.ubbcluj.ro](http://www.cs.ubbcluj.ro/files/orar/2017-1/tabelar/index.html))** | ![alt text](https://i.imgur.com/rsytfGp.png "Before") |
+| **Turns this ([cs.ubbcluj.ro](http://www.cs.ubbcluj.ro/files/orar/2017-2/tabelar/index.html))** | ![alt text](https://imgur.com/a/QNe7W "Before") |
 |:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------:|
 |                                                                                                 | ⬇️                                                     |
-| **Into this ([calendar.google.com](https://calendar.google.com))**                              | ![alt text](https://i.imgur.com/7CWbE7t.png "After")  |
+| **Into this ([calendar.google.com](https://calendar.google.com))**                              | ![alt text](https://imgur.com/a/JCFV6 "After")  |
 
 ## Prerequisites
 
@@ -15,11 +15,23 @@ Command Line Application for generating a timetable-calendar in Google Calendar 
 ## Usage
 
 ```bash
-$ gradle -q run
+$ ./run.sh [...] <link> <group>
+```
+e.g:
+
+```bash
+$ ./run.sh --semigroup=1 http://www.cs.ubbcluj.ro/files/orar/2017-2/tabelar/IE3.html 931
 ```
 
 And then follow the on-screen instructions. If you want only a subset of the activities in the timetable, add the name of the activites that you want to participate to in `filtered_activities.txt` and run the app with:
 
 ```bash
-$ gradle -q run -PappArgs="['filter']"
+$ ./run.sh --filter <link> <group>
 ```
+
+For a full list of options, run:
+
+```bash
+$ ./run.sh --help
+```
+
