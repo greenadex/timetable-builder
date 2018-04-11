@@ -1,6 +1,6 @@
 package model;
 
-import java.security.InvalidParameterException;
+import model.exception.InvalidParameterException;
 
 public enum DayOfWeek {
     Monday(0), Tuesday(1), Wednesday(2), Thursday(3), Friday(4), Saturday(5), Sunday(6);
@@ -17,7 +17,7 @@ public enum DayOfWeek {
                 return Thursday;
             case "Vineri":
                 return Friday;
-            case "Samabata":
+            case "Sambata":
                 return Saturday;
             case "Duminica":
                 return Sunday;

@@ -17,15 +17,14 @@ import com.google.api.services.calendar.model.*;
 import com.google.api.services.calendar.model.Calendar;
 
 import model.Activity;
-import model.Activity.Frequency;
 import model.SemesterInfo;
 import model.Timetable;
+import model.exception.InvalidParameterException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.File;
-import java.security.InvalidParameterException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;

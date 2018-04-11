@@ -1,12 +1,12 @@
 package model;
 
 import java.io.IOException;
-import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import model.exception.InvalidParameterException;
 import utils.TimetableURL;
 
 public class Timetable {

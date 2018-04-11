@@ -1,8 +1,7 @@
 package model;
 
 import lombok.Getter;
-
-import java.security.InvalidParameterException;
+import model.exception.InvalidParameterException;
 
 @Getter
 public class Activity {
