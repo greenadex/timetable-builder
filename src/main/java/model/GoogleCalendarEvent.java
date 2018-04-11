@@ -95,28 +95,20 @@ public class GoogleCalendarEvent {
         event.setColorId(Integer.toString(colorId));
     }
 
-    public void insertInCalendar(Calendar service, String calendarId) throws IOException {
-        event = service.events().insert(calendarId, event).execute();
-        deleteExtraEvents(service, calendarId);
+    public void insertInCalendar(GoogleCalendarService service, String calendarId) throws IOException {
+        event = service.insertEventInCalendarWithId(calendarId, event);
+        deleteExtraEvents(service, calendarId, event.getId());
     }
 
-    private void deleteExtraEvents(Calendar service, String calendarID) throws IOException {
-        String pageToken = null;
-        do {
-            Events events =
-                    service.events().instances(calendarID, event.getId()).setPageToken(pageToken).execute();
-            List<Event> items = events.getItems();
-            deleteExtraEvents(service, calendarID, items);
-            pageToken = events.getNextPageToken();
-        } while (pageToken != null);
-    }
+    private void deleteExtraEvents(
+            GoogleCalendarService service, String calendarId, String eventId) throws IOException {
+        List<Event> events = service.getRecurringEvents(calendarId, eventId);
 
-    private void deleteExtraEvents(Calendar service, String calendarID, List<Event> items) throws IOException {
         int holidayLength = SemesterInfo.getHolidayLength(semester);
         int holidayStartWeek = SemesterInfo.getHolidayStartWeek(semester);
 
         for (int week = 0; week < holidayLength; week++) {
-            service.events().delete(calendarID, items.get(holidayStartWeek + week).getId()).execute();
+            service.deleteEventWithId(calendarId, events.get(holidayStartWeek + week).getId());
         }
 
         Activity.Frequency frequency = activity.getFrequency();
@@ -125,12 +117,14 @@ public class GoogleCalendarEvent {
         }
 
         for (int week = frequency.getSkipWeek(); week < holidayStartWeek; week += 2) {
-            service.events().delete(calendarID, items.get(week).getId()).execute();
+//            service.events().delete(calendarID, items.get(week).getId()).execute();
+            service.deleteEventWithId(calendarId, events.get(week).getId());
         }
 
         int nextWeekAfterHoliday = holidayStartWeek + holidayLength + frequency.getSkipWeek();
         for (int week = nextWeekAfterHoliday; week < SemesterInfo.getNoOfWeeks(semester); week += 2) {
-            service.events().delete(calendarID, items.get(week).getId()).execute();
+//            service.events().delete(calendarID, items.get(week).getId()).execute();
+            service.deleteEventWithId(calendarId, events.get(week).getId());
         }
     }
 

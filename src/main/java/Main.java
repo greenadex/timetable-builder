@@ -7,6 +7,7 @@ import utils.TimetableBuilder;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,7 +60,7 @@ public class Main {
         validateArgs();
         try {
             buildTimetable();
-        } catch (IOException e) {
+        } catch (IOException | GeneralSecurityException e) {
             e.printStackTrace();
         }
     }
@@ -71,7 +72,7 @@ public class Main {
         }
     }
 
-    private void buildTimetable() throws IOException {
+    private void buildTimetable() throws IOException, GeneralSecurityException {
         StudentInfo student = new StudentInfo(link, group, semigroup);
 
         final TimetableURL timetableURL;
@@ -91,16 +92,13 @@ public class Main {
         }
 
         System.out.println("Creating new calendar...");
-        String calendarId = TimetableBuilder.createCalendar(timetable);
-
-        TimetableBuilder.addTimetable(calendarId, timetable);
+        TimetableBuilder builder = new TimetableBuilder(timetable);
         System.out.println("All done!");
 
         if (debug) {
             System.out.println("Press ENTER to delete the created calendar!");
             final int userSignal = System.in.read();
-
-            TimetableBuilder.deleteCalendar(calendarId);
+            builder.deleteCalendar();
             System.out.println("Calendar deleted!");
         }
     }
