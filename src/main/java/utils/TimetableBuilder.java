@@ -9,24 +9,19 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 
 import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.services.calendar.model.*;
 import com.google.api.services.calendar.model.Calendar;
 
 import model.Activity;
-import model.SemesterInfo;
+import model.GoogleCalendarEvent;
 import model.Timetable;
-import model.exception.InvalidParameterException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.File;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class TimetableBuilder {
@@ -84,8 +79,8 @@ public class TimetableBuilder {
                 timetable.getGroup() + "/" + timetable.getSemiGroup() + " Sem." + timetable.getSemester();
         newCalendar.setSummary(summary);
 
-        String description = "Timetable for group " + timetable.getGroup() + " for the semester " +
-                timetable.getSemester() + "\n\n\tRed - Course\n\tGreen - Seminar\n\tYellow - Laboratory";
+        String description = "Timetable for group " + timetable.getGroup() + ", semester " +
+                timetable.getSemester() + ".\n\n\tRed - Lecture\n\tGreen - Seminar\n\tYellow - Laboratory";
         newCalendar.setDescription(description);
 
         newCalendar.setTimeZone("Europe/Bucharest");
@@ -95,124 +90,10 @@ public class TimetableBuilder {
 
     public static void addTimetable(String calendarId, Timetable timetable) throws IOException {
         List<Activity> allActivities = timetable.getAllActivities();
-        for (Activity nextActivity : allActivities) {
-            addActivity(calendarId, nextActivity, timetable.getSemester());
-        }
-    }
-
-    private static void addActivity(String calendarId, Activity activity, int semester) throws IOException {
-        Event event = new Event();
-
-        setSummary(event, activity);
-        setDescription(event, activity);
-        setStartAndEndDate(event, activity, semester);
-        setRecurrence(event, semester);
-        setLocation(event, activity);
-        setColor(event, activity);
-
-        System.out.println("Generating event for " + event.getSummary());
-        event = service.events().insert(calendarId, event).execute();
-
-        deleteExtraEvents(calendarId, activity, event.getId(), semester);
-    }
-
-    private static void setSummary(Event event, Activity activity) {
-        String activityType = activity.getType().toString().substring(0, 3);
-        String title = String.format("(%s) %s", activityType, activity.getName());
-
-        if (activity.getType() == Activity.Type.Laboratory && activity.getGroup().contains("/"))
-            title += " " + activity.getGroup();
-        event.setSummary(title);
-    }
-
-    private static void setDescription(Event event, Activity activity) {
-        event.setDescription(activity.getType().name() + ' ' + activity.getName() + " - "
-                + activity.getProfessor());
-    }
-
-    private static void setStartAndEndDate(Event event, Activity activity, int semester) {
-        String startingDate = getStartingDateOfActivity(activity, semester).toString(),
-                timeZone = (semester == 1 ? ":00.000+03:00" : ":00.000+02:00");
-
-        DateTime start = DateTime.parseRfc3339(startingDate + "T" + activity.getStartTime() + timeZone);
-        DateTime end = DateTime.parseRfc3339(startingDate + "T" + activity.getEndTime() + timeZone);
-
-        event.setStart(new EventDateTime().setDateTime(start).setTimeZone("Europe/Bucharest"));
-        event.setEnd(new EventDateTime().setDateTime(end).setTimeZone("Europe/Bucharest"));
-    }
-
-    private static LocalDate getStartingDateOfActivity(Activity activity, int semester) {
-        String startingDate = SemesterInfo.getStartDate(semester);
-        LocalDate localStartingDate = LocalDate.of(Integer.parseInt(startingDate.substring(0, 4)),
-                Integer.parseInt(startingDate.substring(5, 7)),
-                Integer.parseInt(startingDate.substring(8)));
-
-        localStartingDate = localStartingDate.plus(activity.getDayOfWeek().index, ChronoUnit.DAYS);
-        return localStartingDate;
-    }
-
-    private static void setRecurrence(Event event, int semester) {
-        String recurrence = "RRULE:FREQ=WEEKLY;COUNT=" + SemesterInfo.getNoOfWeeks(semester);
-        event.setRecurrence(Collections.singletonList(recurrence));
-    }
-
-    private static void setLocation(Event event, Activity activity) {
-        event.setLocation(activity.getRoom());
-    }
-
-    private static void setColor(Event event, Activity activity) {
-        final int colorId;
-
-        switch (activity.getType()) {
-            case Lecture:
-                colorId = 4; // light red
-                break;
-            case Seminar:
-                colorId = 10; // green
-                break;
-            case Laboratory:
-                colorId = 5; // yellow
-                break;
-            default:
-                throw new InvalidParameterException("No such activity type: " + activity.getType());
-        }
-
-        event.setColorId(Integer.toString(colorId));
-    }
-
-    private static void deleteExtraEvents(String calendarID, Activity activity, String eventID, int semester)
-            throws IOException {
-        String pageToken = null;
-        do {
-            Events events =
-                    service.events().instances(calendarID, eventID).setPageToken(pageToken).execute();
-            List<Event> items = events.getItems();
-            deleteExtraEvents(calendarID, activity, items, semester);
-            pageToken = events.getNextPageToken();
-        } while (pageToken != null);
-    }
-
-    private static void deleteExtraEvents(String calendarID, Activity activity, List<Event> items, int semester)
-            throws IOException {
-        int holidayLength = SemesterInfo.getHolidayLength(semester);
-        int holidayStartWeek = SemesterInfo.getHolidayStartWeek(semester);
-
-        for (int week = 0; week < holidayLength; week++) {
-            service.events().delete(calendarID, items.get(holidayStartWeek + week).getId()).execute();
-        }
-
-        Activity.Frequency frequency = activity.getFrequency();
-        if (frequency == Activity.Frequency.Weekly) {
-            return;
-        }
-
-        for (int week = frequency.getSkipWeek(); week < holidayStartWeek; week += 2) {
-            service.events().delete(calendarID, items.get(week).getId()).execute();
-        }
-
-        int nextWeekAfterHoliday = holidayStartWeek + holidayLength + frequency.getSkipWeek();
-        for (int week = nextWeekAfterHoliday; week < SemesterInfo.getNoOfWeeks(semester); week += 2) {
-            service.events().delete(calendarID, items.get(week).getId()).execute();
+        for (Activity activity : allActivities) {
+            GoogleCalendarEvent event = new GoogleCalendarEvent(activity, timetable.getSemester());
+            System.out.println("Generating event for " + event.getSummary());
+            event.insertInCalendar(service, calendarId);
         }
     }
 
