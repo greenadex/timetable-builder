@@ -6,11 +6,11 @@ public class SemesterInfo {
     public static final int CHRISTMAS_HOLIDAY_LENGTH = 2;
 
     public static final int NO_OF_WEEKS_SECOND_SEMESTER = 13;
-    public static final int EASTER_HOLIDAY = 6;
+    public static final int EASTER_HOLIDAY = 10;
     public static final int EASTER_HOLIDAY_LENGTH = 1;
 
-    public static final String STARTING_DATE_FIRST_SEMESTER = "2018-10-01";
-    public static final String STARTING_DATE_SECOND_SEMESTER = "2019-02-25";
+    public static final String STARTING_DATE_FIRST_SEMESTER = "2020-09-28";
+    public static final String STARTING_DATE_SECOND_SEMESTER = "2021-02-22";
 
     public static int getNoOfWeeks(int semester) {
         return (semester == 1 ? NO_OF_WEEKS_FIRST_SEMESTER : NO_OF_WEEKS_SECOND_SEMESTER);

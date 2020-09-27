@@ -41,7 +41,7 @@ public class Timetable {
             throw new InvalidParameterException("The given URL does not contain the timetable for group " + group);
         }
 
-        List<String> tableOfGroup = getTableOfGroup(htmlCode, group);
+        List<String> tableOfGroup = getTableOfGroup(htmlCode);
         List<List<String>> rows = divideIntoRows(tableOfGroup);
         rows.forEach(row -> allActivities.add(processRow(row)));
         filterActivities();
@@ -56,30 +56,25 @@ public class Timetable {
                .collect(Collectors.toList());
     }
 
-    private List<String> getTableOfGroup(List<String> htmlCode, final String group) {
-        Pattern beginningOfTable = Pattern.compile("<table .*>");
+    private List<String> getTableOfGroup(List<String> htmlCode) {
         Pattern endOfTable = Pattern.compile("</table>");
+        Pattern groupPattern = Pattern.compile(".*Grupa " + group + ".*" + semiGroup + ".*");
 
-        int wantedTable = group.charAt(group.length() - 1) - '0';
         int indexOfBeginning = -1, indexOfEnd = -1;
 
-        for (int i = 0, foundTable = 0; i < htmlCode.size(); i++) {
-            if (foundTable < wantedTable) {
-                Matcher matcherTable = beginningOfTable.matcher(htmlCode.get(i));
-                if (matcherTable.matches()) {
-                    foundTable++;
-                    if (wantedTable == foundTable) {
-                        indexOfBeginning = i + 1;
-                    }
-                }
+        for (int i = 0; i < htmlCode.size(); i++) {
+            Matcher groupMatcher = groupPattern.matcher(htmlCode.get(i));
+            if (groupMatcher.matches()) {
+                indexOfBeginning = i + 2;
+                break;
             }
+        }
 
-            if (foundTable == wantedTable) {
-                Matcher matcherEndTable = endOfTable.matcher(htmlCode.get(i));
-                if (matcherEndTable.matches()) {
-                    indexOfEnd = i;
-                    break;
-                }
+        for (int i = indexOfBeginning; i < htmlCode.size(); i++) {
+            Matcher matcherEndTable = endOfTable.matcher(htmlCode.get(i));
+            if (matcherEndTable.matches()) {
+                indexOfEnd = i;
+                break;
             }
         }
 
